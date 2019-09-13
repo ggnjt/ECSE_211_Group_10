@@ -35,7 +35,7 @@ public class Main {
     // Start the poller and printer threads
     new Thread(new UltrasonicPoller()).start();
     new Thread(new Printer()).start();
-
+    
     // Wait here until button pressed to terminate wall follower
     Button.waitForAnyPress();
     System.exit(0);

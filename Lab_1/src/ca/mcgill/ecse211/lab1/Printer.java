@@ -27,9 +27,9 @@ public class Printer implements Runnable {
       }
       
       // print last US reading
-      TEXT_LCD.drawString("US Distance: " + controller.readUSDistance(), 0, 2);
-      TEXT_LCD.drawString("Left Speed: " + LEFT_MOTOR.getRotationSpeed(), 0, 3);
-      TEXT_LCD.drawString("Right Speed: " + RIGHT_MOTOR.getRotationSpeed(), 0, 4);
+      TEXT_LCD.drawString("US Distance: " + controller.readUSDistance(), 0, 3);
+      TEXT_LCD.drawString("Left Speed: " + LEFT_MOTOR.getRotationSpeed(), 0, 4);
+      TEXT_LCD.drawString("Right Speed: " + RIGHT_MOTOR.getRotationSpeed(), 0, 5);
 
       try {
         Thread.sleep(200); // sleep for 200 mS

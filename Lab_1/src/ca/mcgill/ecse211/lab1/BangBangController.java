@@ -7,8 +7,9 @@ public class BangBangController extends UltrasonicController {
 	//private static int DISTANCE_BUFFER; //used to store the previous distance
 	private static int GAP_BUFFER_COUNT = 0;
 	private static int MOVING_BUFFER_COUNT = 0;
-	private static final int MOVING_BUFFER_COUNT_LIMIT = 120;
-	private static final int GAP_BUFFER_COUNT_LIMIT = 61;
+	private static final int MOVING_BUFFER_COUNT_LIMIT = 80;
+	private static final int GAP_BUFFER_COUNT_LIMIT = 23;
+	//private static int BACKWARD_BUFFER = 30;
 	
 	public BangBangController() {
 		LEFT_MOTOR.setSpeed(MOTOR_HIGH); // Start robot moving forward
@@ -24,6 +25,17 @@ public class BangBangController extends UltrasonicController {
 		
 		int distError = BAND_CENTER - readUSDistance();		
 
+		
+//		if ((readUSDistance() <= 10 || BACKWARD_BUFFER < 20) && MOVING_BUFFER_COUNT < 80) {
+//			LEFT_MOTOR.setSpeed(MOTOR_HIGH);
+//			RIGHT_MOTOR.setSpeed(MOTOR_HIGH-30);
+//			LEFT_MOTOR.backward();
+//			RIGHT_MOTOR.backward();
+//			BACKWARD_BUFFER--;
+//			if (BACKWARD_BUFFER == 0) {
+//				BACKWARD_BUFFER = 20;
+//			}
+//		}
 		if (Math.abs(distError) <= BAND_WIDTH) {
 			LEFT_MOTOR.setSpeed(MOTOR_HIGH);
 			RIGHT_MOTOR.setSpeed(MOTOR_HIGH);
@@ -35,28 +47,28 @@ public class BangBangController extends UltrasonicController {
 				MOVING_BUFFER_COUNT = 0;
 			}
 		}
-		else if (GAP_BUFFER_COUNT < 60  && (distError <= 40)) {
+		else if (GAP_BUFFER_COUNT < GAP_BUFFER_COUNT_LIMIT  && (distError <= 40)) { //ignore gap
 			LEFT_MOTOR.setSpeed(MOTOR_HIGH);
 			RIGHT_MOTOR.setSpeed(MOTOR_HIGH);
 			LEFT_MOTOR.forward();
 			RIGHT_MOTOR.forward();
 			GAP_BUFFER_COUNT++;
-			if (GAP_BUFFER_COUNT > GAP_BUFFER_COUNT_LIMIT || readUSDistance() < 12) {
+			if (GAP_BUFFER_COUNT >= GAP_BUFFER_COUNT_LIMIT || readUSDistance() < 12) {
 				MOVING_BUFFER_COUNT = 0;
 			}
 		}
-		else if (distError > 0 && readUSDistance() < 10) {
+		else if (distError > 0 && readUSDistance() < 10) {  //sharp right turn
 			LEFT_MOTOR.setSpeed(MOTOR_HIGH + 30);
-			RIGHT_MOTOR.setSpeed(MOTOR_LOW - 50);
+			RIGHT_MOTOR.setSpeed(MOTOR_LOW);
 			LEFT_MOTOR.forward();
-			RIGHT_MOTOR.forward();
+			RIGHT_MOTOR.backward();
 			MOVING_BUFFER_COUNT++;
 			if (MOVING_BUFFER_COUNT >= MOVING_BUFFER_COUNT_LIMIT) {
 				GAP_BUFFER_COUNT = 0;
 				MOVING_BUFFER_COUNT = 0;
 			}
 		}
-		else if (distError > 0) {
+		else if (distError > 0) { //right turn
 			LEFT_MOTOR.setSpeed(MOTOR_HIGH + 15);
 			RIGHT_MOTOR.setSpeed(MOTOR_LOW - 50);
 			LEFT_MOTOR.forward();
@@ -67,8 +79,8 @@ public class BangBangController extends UltrasonicController {
 				MOVING_BUFFER_COUNT = 0;
 			}
 		}
-		else if (distError < 0 && readUSDistance() > 75){
-			LEFT_MOTOR.setSpeed(MOTOR_LOW - 50);
+		else if (distError < 0 && readUSDistance() > 75){ //sharp left turn
+			LEFT_MOTOR.setSpeed(MOTOR_LOW - 30);
 			RIGHT_MOTOR.setSpeed(MOTOR_HIGH + 30);
 			LEFT_MOTOR.forward();
 			RIGHT_MOTOR.forward();
@@ -78,7 +90,7 @@ public class BangBangController extends UltrasonicController {
 				MOVING_BUFFER_COUNT = 0;
 			}
 		}
-		else{
+		else{ //low speed left turn
 			LEFT_MOTOR.setSpeed(MOTOR_LOW);
 			RIGHT_MOTOR.setSpeed(MOTOR_HIGH);
 			LEFT_MOTOR.forward();
@@ -90,7 +102,7 @@ public class BangBangController extends UltrasonicController {
 			}
 		}
 		
-		//System.out.println("Buffer: " + BUFFER_COUNT);
+		System.out.println(GAP_BUFFER_COUNT);
     
 	}
 

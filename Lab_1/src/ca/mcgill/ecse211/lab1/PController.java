@@ -6,14 +6,15 @@ public class PController extends UltrasonicController {
 
   private static final int MOTOR_SPEED = 160;
   private static final int DELTA_SPEED = 50;
-  private static final int MAX_SPEED = 240;
-  private static final int MIN_SPEED = 5;
+  private static final int MAX_SPEED = 290;
+  private static final int MIN_SPEED = 50;
+  private static final int MOVING_BUFFER_COUNT_LIMIT = 45;
+  private static final double POWER = 3.3;
+  private static final int GAP_BUFFER_COUNT_LIMIT = 23;
+  //private static int BACKWARD_BUFFER = 30;
   private static int GAP_BUFFER_COUNT = 0;
   private static int MOVING_BUFFER_COUNT = 0;
-  private static final int MOVING_BUFFER_COUNT_LIMIT = 120;
-  private static final double POWER = 6.0;
-  	
-
+  
   public PController() {
     LEFT_MOTOR.setSpeed(MOTOR_SPEED); // Initialize motor rolling forward
     RIGHT_MOTOR.setSpeed(MOTOR_SPEED);
@@ -24,9 +25,20 @@ public class PController extends UltrasonicController {
   @Override
   public void processUSData(int distance) {
     filter(distance);
+    
     int distError = BAND_CENTER - readUSDistance();
     
-    if (Math.abs(distError) <= BAND_WIDTH) {
+//    if ((readUSDistance() <= 10 || BACKWARD_BUFFER < 20) && MOVING_BUFFER_COUNT < 80) {
+//		LEFT_MOTOR.setSpeed(MOTOR_HIGH);
+//		RIGHT_MOTOR.setSpeed(MOTOR_HIGH-30);
+//		LEFT_MOTOR.backward();
+//		RIGHT_MOTOR.backward();
+//		BACKWARD_BUFFER--;
+//		if (BACKWARD_BUFFER == 0) {
+//			BACKWARD_BUFFER = 20;
+//		}
+//	}
+    if (Math.abs(distError) <= BAND_WIDTH) { //straight
 		LEFT_MOTOR.setSpeed(MOTOR_SPEED);
 		RIGHT_MOTOR.setSpeed(MOTOR_SPEED);
 		LEFT_MOTOR.forward();
@@ -37,18 +49,19 @@ public class PController extends UltrasonicController {
 			MOVING_BUFFER_COUNT = 0;
 		}
 	}
-	else if (GAP_BUFFER_COUNT < 60  && (distError <= 40)) {
+	else if (GAP_BUFFER_COUNT < GAP_BUFFER_COUNT_LIMIT  && (distError <= 40)) { //gap ignore
 		LEFT_MOTOR.setSpeed(MOTOR_SPEED);
 		RIGHT_MOTOR.setSpeed(MOTOR_SPEED);
 		LEFT_MOTOR.forward();
 		RIGHT_MOTOR.forward();
 		GAP_BUFFER_COUNT++;
-		if (GAP_BUFFER_COUNT > 61 || readUSDistance() < 12) {
-			GAP_BUFFER_COUNT = 62;
+		if (GAP_BUFFER_COUNT > GAP_BUFFER_COUNT_LIMIT || readUSDistance() < 16) {
 			MOVING_BUFFER_COUNT = 0;
 		}
 	}
 	else {
+		boolean LB = false;
+		boolean RB = false;
 		int d = (int)(getGain(distError, BAND_CENTER)*DELTA_SPEED*POWER);
 		
 		if (d == Integer.MAX_VALUE) {
@@ -58,13 +71,20 @@ public class PController extends UltrasonicController {
 		}
 
 		int LS = MOTOR_SPEED + d;
+		if (LS < 0) {
+			LB = true;
+		}
 		if (LS < MIN_SPEED) {
 			LS = MIN_SPEED;
 		}
 		else if (LS > MAX_SPEED) {
 			LS = MAX_SPEED;
 		}
+		
 		int RS = MOTOR_SPEED - d;
+		if (RS - 40 < 0) {
+			RB = true;
+		}
 		if (RS < MIN_SPEED) {
 			RS = MIN_SPEED;
 		}
@@ -74,19 +94,33 @@ public class PController extends UltrasonicController {
 		
 		LEFT_MOTOR.setSpeed(LS);
 		RIGHT_MOTOR.setSpeed(RS);
-		LEFT_MOTOR.forward();
-		RIGHT_MOTOR.forward();
+		if (LB) {
+			LEFT_MOTOR.backward();
+		}
+		else {
+			LEFT_MOTOR.forward();
+		}
+		if (RB) {
+			RIGHT_MOTOR.backward();
+		}
+		else {
+			RIGHT_MOTOR.forward();
+		}
 		MOVING_BUFFER_COUNT++;
 		if (MOVING_BUFFER_COUNT >= MOVING_BUFFER_COUNT_LIMIT) {
 			GAP_BUFFER_COUNT = 0;
 			MOVING_BUFFER_COUNT = 0;
 		}
 	}
+    System.out.println(GAP_BUFFER_COUNT);
   }
 
   private double getGain(int error, int band) {
 	  double result = (float)error / (float)band;
-	  return result*(Math.abs(result));
+	  if (result < 0) {
+		  return result;
+	  }
+	  else return result*(Math.abs(result));
   }
 
   @Override

@@ -19,7 +19,7 @@ public class Resources {
   /**
    * Offset from the wall (cm).
    */
-  public static final int BAND_CENTER = 25;
+  public static final int BAND_CENTER = 35;
   
   /**
    * Width of dead band (cm).
@@ -36,7 +36,7 @@ public class Resources {
    */
   public static final int MOTOR_HIGH = 170;
   
-  public static final int FILTER_OUT = 20;
+  public static final int FILTER_OUT = 35;
 
   /**
    * The LCD screen used for displaying text.
@@ -53,7 +53,7 @@ public class Resources {
    * The left motor.
    */
   public static final EV3LargeRegulatedMotor LEFT_MOTOR =
-      new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+      new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
   
   /**
    * The right motor.

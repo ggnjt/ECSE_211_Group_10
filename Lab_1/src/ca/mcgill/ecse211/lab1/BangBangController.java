@@ -7,6 +7,7 @@ public class BangBangController extends UltrasonicController {
 	//private static int DISTANCE_BUFFER; //used to store the previous distance
 	private static int GAP_BUFFER_COUNT = 0;
 	private static int MOVING_BUFFER_COUNT = 0;
+	private static int BUFFER_OFFSET = 100;
 	
 	public BangBangController() {
 		LEFT_MOTOR.setSpeed(MOTOR_HIGH); // Start robot moving forward
@@ -28,7 +29,7 @@ public class BangBangController extends UltrasonicController {
 			LEFT_MOTOR.forward();
 			RIGHT_MOTOR.forward();
 			MOVING_BUFFER_COUNT++;
-			if (MOVING_BUFFER_COUNT >= 120) {
+			if (MOVING_BUFFER_COUNT >= BUFFER_OFFSET) {
 				GAP_BUFFER_COUNT = 0;
 				MOVING_BUFFER_COUNT = 0;
 			}
@@ -50,7 +51,7 @@ public class BangBangController extends UltrasonicController {
 			LEFT_MOTOR.forward();
 			RIGHT_MOTOR.forward();
 			MOVING_BUFFER_COUNT++;
-			if (MOVING_BUFFER_COUNT >= 120) {
+			if (MOVING_BUFFER_COUNT >= BUFFER_OFFSET) {
 				GAP_BUFFER_COUNT = 0;
 				MOVING_BUFFER_COUNT = 0;
 			}
@@ -61,7 +62,7 @@ public class BangBangController extends UltrasonicController {
 			LEFT_MOTOR.forward();
 			RIGHT_MOTOR.forward();
 			MOVING_BUFFER_COUNT++;
-			if (MOVING_BUFFER_COUNT >= 120) {
+			if (MOVING_BUFFER_COUNT >= BUFFER_OFFSET) {
 				GAP_BUFFER_COUNT = 0;
 				MOVING_BUFFER_COUNT = 0;
 			}
@@ -72,7 +73,7 @@ public class BangBangController extends UltrasonicController {
 			LEFT_MOTOR.forward();
 			RIGHT_MOTOR.forward();
 			MOVING_BUFFER_COUNT++;
-			if (MOVING_BUFFER_COUNT >= 120) {
+			if (MOVING_BUFFER_COUNT >= BUFFER_OFFSET) {
 				GAP_BUFFER_COUNT = 0;
 				MOVING_BUFFER_COUNT = 0;
 			}
@@ -83,7 +84,7 @@ public class BangBangController extends UltrasonicController {
 			LEFT_MOTOR.forward();
 			RIGHT_MOTOR.forward();
 			MOVING_BUFFER_COUNT++;
-			if (MOVING_BUFFER_COUNT >= 120) {
+			if (MOVING_BUFFER_COUNT >= BUFFER_OFFSET) {
 				GAP_BUFFER_COUNT = 0;
 				MOVING_BUFFER_COUNT = 0;
 			}

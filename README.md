@@ -1,2 +1,2 @@
-# ECSE_211_Group_46
-ECSE 211 Group 46 Lab and Group Page
+# ECSE_211_Group_10
+ECSE 211 Group 10 Lab and Group Page

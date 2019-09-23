@@ -108,7 +108,7 @@ public class Odometer implements Runnable {
 
       double dy = Math.cos((theta * Math.PI / 180.0)) * d;
       double dx = Math.sin((theta * Math.PI / 180.0)) * d;
-      double dt = dtheta * 180.0 / Math.PI;
+      double dt = dtheta * 180.0 / Math.PI * 1.05;
       odo.update(dx, dy, dt);
       // TODO Calculate new robot position based on tachometer counts
 

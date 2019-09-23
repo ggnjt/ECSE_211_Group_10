@@ -37,23 +37,23 @@ public class OdometryCorrection implements Runnable {
           //vertical
           switch(numberOfLines) {
             case 1:
-              odometer.setY(TILE_SIZE);
+              odometer.setY(TILE_SIZE - 4.0);
               break;
             case 2:
-              odometer.setY(TILE_SIZE * 2.0);
+              odometer.setY(TILE_SIZE * 2.0 - 4.0);
               break;
             case 3:
-              odometer.setY(TILE_SIZE * 3.0);
+              odometer.setY(TILE_SIZE * 3.0 - 4.0);
               verti = false;
               break;
             case 7:
-              odometer.setY(TILE_SIZE * 3.0);
+              odometer.setY(TILE_SIZE * 3.0 + 4.0);
               break;
             case 8:
-              odometer.setY(TILE_SIZE * 2.0);
+              odometer.setY(TILE_SIZE * 2.0 + 4.0);
               break;
             case 9:
-              odometer.setY(TILE_SIZE);
+              odometer.setY(TILE_SIZE + 4.0);
               verti = false;
               break;
           }
@@ -61,23 +61,23 @@ public class OdometryCorrection implements Runnable {
           //horizental
           switch(numberOfLines) {
             case 4:
-              odometer.setX(TILE_SIZE);
+              odometer.setX(TILE_SIZE - 4.0);
               break;
             case 5:
-              odometer.setX(TILE_SIZE * 2.0);
+              odometer.setX(TILE_SIZE * 2.0 - 4.0);
               break;
             case 6:
-              odometer.setX(TILE_SIZE * 3.0);
+              odometer.setX(TILE_SIZE * 3.0 - 4.0);
               verti = true;
               break;
             case 10:
-              odometer.setX(TILE_SIZE * 3.0);
+              odometer.setX(TILE_SIZE * 3.0 + 4.0);
               break;
             case 11:
-              odometer.setX(TILE_SIZE * 2.0);
+              odometer.setX(TILE_SIZE * 2.0 + 4.0);
               break;
             case 12:
-              odometer.setX(TILE_SIZE);
+              odometer.setX(TILE_SIZE + 4.0);
               verti = true;
               break;
           }

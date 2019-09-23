@@ -23,7 +23,7 @@ public class Resources {
   /**
    * The robot width in centimeters.
    */
-  public static final double TRACK = 11.6;
+  public static final double TRACK = 11.8;
   
   /**
    * The speed at which the robot moves forward in degrees per second.

@@ -7,6 +7,7 @@ import lejos.robotics.SampleProvider;
 
 public class OdometryCorrection implements Runnable {
   private static final long CORRECTION_PERIOD = 10;
+  private static final double SENSOR_CENTER_CORRECTION = 4.5;
   
   // sensor
   private SampleProvider sampleProvider = colorSensor.getRedMode();
@@ -37,23 +38,23 @@ public class OdometryCorrection implements Runnable {
           //vertical
           switch(numberOfLines) {
             case 1:
-              odometer.setY(TILE_SIZE - 4.0);
+              odometer.setY(TILE_SIZE - SENSOR_CENTER_CORRECTION);
               break;
             case 2:
-              odometer.setY(TILE_SIZE * 2.0 - 4.0);
+              odometer.setY(TILE_SIZE * 2.0 - SENSOR_CENTER_CORRECTION);
               break;
             case 3:
-              odometer.setY(TILE_SIZE * 3.0 - 4.0);
+              odometer.setY(TILE_SIZE * 3.0 - SENSOR_CENTER_CORRECTION);
               verti = false;
               break;
             case 7:
-              odometer.setY(TILE_SIZE * 3.0 + 4.0);
+              odometer.setY(TILE_SIZE * 3.0 + SENSOR_CENTER_CORRECTION);
               break;
             case 8:
-              odometer.setY(TILE_SIZE * 2.0 + 4.0);
+              odometer.setY(TILE_SIZE * 2.0 + SENSOR_CENTER_CORRECTION);
               break;
             case 9:
-              odometer.setY(TILE_SIZE + 4.0);
+              odometer.setY(TILE_SIZE + SENSOR_CENTER_CORRECTION);
               verti = false;
               break;
           }
@@ -61,23 +62,23 @@ public class OdometryCorrection implements Runnable {
           //horizental
           switch(numberOfLines) {
             case 4:
-              odometer.setX(TILE_SIZE - 4.0);
+              odometer.setX(TILE_SIZE - SENSOR_CENTER_CORRECTION);
               break;
             case 5:
-              odometer.setX(TILE_SIZE * 2.0 - 4.0);
+              odometer.setX(TILE_SIZE * 2.0 - SENSOR_CENTER_CORRECTION);
               break;
             case 6:
-              odometer.setX(TILE_SIZE * 3.0 - 4.0);
+              odometer.setX(TILE_SIZE * 3.0 - SENSOR_CENTER_CORRECTION);
               verti = true;
               break;
             case 10:
-              odometer.setX(TILE_SIZE * 3.0 + 4.0);
+              odometer.setX(TILE_SIZE * 3.0 + SENSOR_CENTER_CORRECTION);
               break;
             case 11:
-              odometer.setX(TILE_SIZE * 2.0 + 4.0);
+              odometer.setX(TILE_SIZE * 2.0 + SENSOR_CENTER_CORRECTION);
               break;
             case 12:
-              odometer.setX(TILE_SIZE + 4.0);
+              odometer.setX(TILE_SIZE + SENSOR_CENTER_CORRECTION);
               verti = true;
               break;
           }

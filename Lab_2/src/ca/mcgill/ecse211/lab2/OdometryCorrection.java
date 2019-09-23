@@ -1,7 +1,6 @@
 package ca.mcgill.ecse211.lab2;
 
 import static ca.mcgill.ecse211.lab2.Resources.*;
-import java.util.Arrays;
 import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 
@@ -25,11 +24,13 @@ public class OdometryCorrection implements Runnable {
       correctionStart = System.currentTimeMillis();
 
       sampleProvider.fetchSample(sampleColor, 0);
-      System.out.println(Arrays.toString(sampleColor));
+      //System.out.println(Arrays.toString(sampleColor));
       if(sampleColor[0]  <  0.073 && walkingOnWood) {
         Sound.beep();
         numberOfLines++;
+        System.out.println("increased to " + numberOfLines);
         walkingOnWood = false;
+        Main.sleepFor(1500);
       }
       else {
         walkingOnWood = true;

@@ -4,7 +4,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-//static import to avoid duplicating variables and make the code easier to read
+// static import to avoid duplicating variables and make the code easier to read
 import static ca.mcgill.ecse211.lab2.Resources.*;
 
 /**
@@ -19,22 +19,22 @@ import static ca.mcgill.ecse211.lab2.Resources.*;
  */
 
 public class Odometer implements Runnable {
-  
+
   /**
    * The x-axis position in cm.
    */
   private volatile double x;
-  
+
   /**
    * The y-axis position in cm.
    */
   private volatile double y; // y-axis position
-  
+
   /**
    * The orientation in degrees.
    */
   private volatile double theta; // Head angle
-  
+
   /**
    * The (x, y, theta) position as an array
    */
@@ -45,7 +45,7 @@ public class Odometer implements Runnable {
    * Fair lock for concurrent writing
    */
   private static Lock lock = new ReentrantLock(true);
-  
+
   /**
    * Indicates if a thread is trying to reset any position parameters
    */
@@ -67,10 +67,10 @@ public class Odometer implements Runnable {
    */
   private static final long ODOMETER_PERIOD = 25;
 
-  
+
   /**
-   * This is the default constructor of this class. It initiates all motors and variables once.It
-   * cannot be accessed externally.
+   * This is the default constructor of this class. It initiates all motors and variables once.It cannot be accessed
+   * externally.
    */
   private Odometer() {
     setXYT(0, 0, 0);
@@ -85,7 +85,7 @@ public class Odometer implements Runnable {
     if (odo == null) {
       odo = new Odometer();
     }
-    
+
     return odo;
   }
 
@@ -101,22 +101,22 @@ public class Odometer implements Runnable {
       leftMotorTachoCount = leftMotor.getTachoCount();
       rightMotorTachoCount = rightMotor.getTachoCount();
 
-      double dl = leftMotorTachoCount*WHEEL_RAD*Math.PI/180.0;
-      double dr = rightMotorTachoCount*WHEEL_RAD*Math.PI/180.0;
+      double dl = leftMotorTachoCount * WHEEL_RAD * Math.PI / 180.0;
+      double dr = rightMotorTachoCount * WHEEL_RAD * Math.PI / 180.0;
       double d = (dl + dr) * 0.5;
-      double dtheta = (dl - dr)/TRACK; //angle in radians
-      
-      double dy = Math.cos((theta*Math.PI/180.0+dtheta)) * d;
-      double dx = Math.sin((theta*Math.PI/180.0)+dtheta) * d;
+      double dtheta = (dl - dr) / TRACK; // angle in radians
+
+      double dy = Math.cos(theta + dtheta) * d;
+      double dx = Math.sin(theta + dtheta) * d;
       double dt = dtheta * 180.0 / Math.PI;
       odo.update(dx, dy, dt);
       // TODO Calculate new robot position based on tachometer counts
-      
+
       // TODO Update odometer values with new calculated values, eg
-      
+
 
       // this ensures that the odometer only runs once every period
-      
+
       updateEnd = System.currentTimeMillis();
       leftMotor.resetTachoCount();
       rightMotor.resetTachoCount();
@@ -129,9 +129,9 @@ public class Odometer implements Runnable {
       }
     }
   }
-  
+
   // IT IS NOT NECESSARY TO MODIFY ANYTHING BELOW THIS LINE
-  
+
   /**
    * Returns the Odometer data.
    * <p>
@@ -162,8 +162,7 @@ public class Odometer implements Runnable {
   }
 
   /**
-   * Adds dx, dy and dtheta to the current values of x, y and theta, respectively. Useful for
-   * odometry.
+   * Adds dx, dy and dtheta to the current values of x, y and theta, respectively. Useful for odometry.
    * 
    * @param dx
    * @param dy

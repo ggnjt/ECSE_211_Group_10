@@ -13,20 +13,19 @@ public class OdometryCorrection implements Runnable {
 
     while (true) {
       correctionStart = System.currentTimeMillis();
-      
+
       colorSensor.getColorIDMode();
-      if (colorSensor.getColorID() == 7) { //on wood
-    	  
-      }
-      else if (colorSensor.getColorID() == 1) {//on black line
-    	  
+      if (colorSensor.getColorID() == 7) { // on wood
+
+      } else if (colorSensor.getColorID() == 1) {// on black line
+
       }
       // TODO Trigger correction (When do I have information to correct?)
-      
+
       // TODO Calculate new (accurate) robot position
 
       // TODO Update odometer with new calculated (and more accurate) values, eg:
-      //odometer.setXYT(0.3, 19.23, 5.0);
+      // odometer.setXYT(0.3, 19.23, 5.0);
 
       // this ensures the odometry correction occurs only once every period
       correctionEnd = System.currentTimeMillis();
@@ -35,5 +34,5 @@ public class OdometryCorrection implements Runnable {
       }
     }
   }
-  
+
 }

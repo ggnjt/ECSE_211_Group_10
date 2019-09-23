@@ -2,7 +2,7 @@ package ca.mcgill.ecse211.lab2;
 
 import java.text.DecimalFormat;
 
-//static import to avoid duplicating variables and make the code easier to read
+// static import to avoid duplicating variables and make the code easier to read
 import static ca.mcgill.ecse211.lab2.Resources.*;
 
 /**
@@ -15,9 +15,9 @@ public class Display implements Runnable {
   private long timeout = Long.MAX_VALUE;
 
   public void run() {
-    
+
     LCD.clear();
-    
+
     long updateStart, updateEnd;
 
     long tStart = System.currentTimeMillis();
@@ -26,13 +26,13 @@ public class Display implements Runnable {
 
       // Retrieve x, y and Theta information
       position = odometer.getXYT();
-      
+
       // Print x,y, and theta information
       DecimalFormat numberFormat = new DecimalFormat("######0.00");
       LCD.drawString("X: " + numberFormat.format(position[0]), 0, 0);
       LCD.drawString("Y: " + numberFormat.format(position[1]), 0, 1);
       LCD.drawString("T: " + numberFormat.format(position[2]), 0, 2);
-      
+
       // this ensures that the data is updated only once every period
       updateEnd = System.currentTimeMillis();
       if (updateEnd - updateStart < DISPLAY_PERIOD) {
@@ -45,7 +45,7 @@ public class Display implements Runnable {
     } while ((updateEnd - tStart) <= timeout);
 
   }
-  
+
   /**
    * Sets the timeout in ms.
    * 
@@ -54,7 +54,7 @@ public class Display implements Runnable {
   public void setTimeout(long timeout) {
     this.timeout = timeout;
   }
-  
+
   /**
    * Shows the text on the LCD, line by line.
    * 

@@ -1,6 +1,6 @@
 package ca.mcgill.ecse211.lab2;
 
-//static import to avoid duplicating variables and make the code easier to read
+// static import to avoid duplicating variables and make the code easier to read
 import static ca.mcgill.ecse211.lab2.Resources.*;
 
 /**
@@ -9,8 +9,8 @@ import static ca.mcgill.ecse211.lab2.Resources.*;
 public class SquareDriver {
 
   /**
-   * Drives the robot in a square of size 3x3 Tiles. It is to be run in parallel
-   * with the odometer and odometer correction classes to allow testing their functionality.
+   * Drives the robot in a square of size 3x3 Tiles. It is to be run in parallel with the odometer and odometer
+   * correction classes to allow testing their functionality.
    */
   public static void drive() {
     // spawn a new Thread to avoid this method blocking
@@ -56,8 +56,7 @@ public class SquareDriver {
   }
 
   /**
-   * Converts input angle to the total rotation of each wheel needed to rotate the robot by that
-   * angle.
+   * Converts input angle to the total rotation of each wheel needed to rotate the robot by that angle.
    * 
    * @param angle
    * @return the wheel rotations necessary to rotate the robot by the angle

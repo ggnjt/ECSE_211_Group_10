@@ -18,7 +18,7 @@ public class Main {
    */
   public static void main(String[] args) {
     int buttonChoice;
-    new Thread(odometer).start(); // TODO implement Odometer
+    new Thread(odometer).start();
 
     buttonChoice = chooseDriveInSquareOrFloatMotors();
 
@@ -27,7 +27,7 @@ public class Main {
     } else {
       buttonChoice = chooseCorrectionOrNot();
       if (buttonChoice == Button.ID_RIGHT) {
-        new Thread(new OdometryCorrection()).start(); // TODO implement OdometryCorrection
+        new Thread(new OdometryCorrection()).start(); 
       }
       SquareDriver.drive();
     }

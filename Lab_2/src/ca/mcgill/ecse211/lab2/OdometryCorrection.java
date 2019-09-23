@@ -7,7 +7,7 @@ import lejos.robotics.SampleProvider;
 
 public class OdometryCorrection implements Runnable {
   private static final long CORRECTION_PERIOD = 10;
-  private static final double SENSOR_CENTER_CORRECTION = 4.5;
+  private static final double SENSOR_CENTER_CORRECTION = 4.5; //distance form the sensor to the center of the vehicle (cm)
   
   // sensor
   private SampleProvider sampleProvider = colorSensor.getRedMode();
@@ -19,9 +19,9 @@ public class OdometryCorrection implements Runnable {
   public void run() {
     long correctionStart, correctionEnd;
     
-    int numberOfLines = 0;
+    int numberOfLines = 0; //line counter for the number of black lines the vehicle crossed
     boolean walkingOnWood = true;
-    boolean verti = true;
+    boolean verti = true; //boolean to store whether the vehicle is moving in the vertical direction
     
     while (true) {
       correctionStart = System.currentTimeMillis();
@@ -31,13 +31,11 @@ public class OdometryCorrection implements Runnable {
         Sound.beep();
         numberOfLines++;
         
-        //get robots current position
-        double[] position = odometer.getXYT();
-        
         if(verti) {
           //vertical
           switch(numberOfLines) {
-            case 1:
+          //moving in positive y direction
+            case 1: 
               odometer.setY(TILE_SIZE - SENSOR_CENTER_CORRECTION);
               break;
             case 2:
@@ -47,6 +45,7 @@ public class OdometryCorrection implements Runnable {
               odometer.setY(TILE_SIZE * 3.0 - SENSOR_CENTER_CORRECTION);
               verti = false;
               break;
+          //moving in negative y direction
             case 7:
               odometer.setY(TILE_SIZE * 3.0 + SENSOR_CENTER_CORRECTION);
               break;
@@ -61,6 +60,7 @@ public class OdometryCorrection implements Runnable {
         } else {
           //horizental
           switch(numberOfLines) {
+          //moving in positive x direction
             case 4:
               odometer.setX(TILE_SIZE - SENSOR_CENTER_CORRECTION);
               break;
@@ -71,6 +71,7 @@ public class OdometryCorrection implements Runnable {
               odometer.setX(TILE_SIZE * 3.0 - SENSOR_CENTER_CORRECTION);
               verti = true;
               break;
+          //moving in negative x direction
             case 10:
               odometer.setX(TILE_SIZE * 3.0 + SENSOR_CENTER_CORRECTION);
               break;
@@ -84,17 +85,11 @@ public class OdometryCorrection implements Runnable {
           }
         }
         walkingOnWood = false;
-        Main.sleepFor(1500);
+        Main.sleepFor(1500); //sleeps the thread to avoid reading the same black line more than once
       }
       else {
         walkingOnWood = true;
       }
-      // TODO Trigger correction (When do I have information to correct?)
-
-      // TODO Calculate new (accurate) robot position
-
-      // TODO Update odometer with new calculated (and more accurate) values, eg:
-      // odometer.setXYT(0.3, 19.23, 5.0);
 
       // this ensures the odometry correction occurs only once every period
       correctionEnd = System.currentTimeMillis();

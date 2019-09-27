@@ -22,10 +22,9 @@ public class OdometryCorrection implements Runnable {
     int numberOfLines = 0; //line counter for the number of black lines the vehicle crossed
     boolean walkingOnWood = true;
     boolean verti = true; //boolean to store whether the vehicle is moving in the vertical direction
-    
+    double internalReading;
     while (true) {
       correctionStart = System.currentTimeMillis();
-
       sampleProvider.fetchSample(sampleColor, 0);
       if(sampleColor[0]  <  0.12 && walkingOnWood) {
         Sound.beep();
@@ -39,23 +38,31 @@ public class OdometryCorrection implements Runnable {
               odometer.setY(TILE_SIZE - SENSOR_CENTER_CORRECTION);
               break;
             case 2:
+            	//internalReading = odometer.getXYT()[1]-(TILE_SIZE - SENSOR_CENTER_CORRECTION);
+            	//System.out.println("Internal Y: " + internalReading + ", ratio: " + internalReading/TILE_SIZE);
               odometer.setY(TILE_SIZE * 2.0 - SENSOR_CENTER_CORRECTION);
               break;
             case 3:
-              odometer.setY(TILE_SIZE * 3.0 - SENSOR_CENTER_CORRECTION);
-              verti = false;
-              break;
+            	//internalReading = odometer.getXYT()[1]-(TILE_SIZE * 2.0 - SENSOR_CENTER_CORRECTION);
+            	//System.out.println("Internal Y: " + internalReading + ", ratio: " + internalReading/TILE_SIZE);
+            	odometer.setY(TILE_SIZE * 3.0 - SENSOR_CENTER_CORRECTION);
+            	verti = false;
+            	break;
           //moving in negative y direction
             case 7:
               odometer.setY(TILE_SIZE * 3.0 + SENSOR_CENTER_CORRECTION);
               break;
             case 8:
-              odometer.setY(TILE_SIZE * 2.0 + SENSOR_CENTER_CORRECTION);
-              break;
+            	//internalReading = odometer.getXYT()[1]-(TILE_SIZE * 3.0 + SENSOR_CENTER_CORRECTION);
+            	//System.out.println("Internal Y: " + internalReading + ", ratio: " + internalReading/TILE_SIZE);
+            	odometer.setY(TILE_SIZE * 2.0 + SENSOR_CENTER_CORRECTION);
+            	break;
             case 9:
-              odometer.setY(TILE_SIZE + SENSOR_CENTER_CORRECTION);
-              verti = false;
-              break;
+            	//internalReading = odometer.getXYT()[1]-(TILE_SIZE * 2.0 + SENSOR_CENTER_CORRECTION);
+            	//System.out.println("Internal Y: " + internalReading + ", ratio: " + internalReading/TILE_SIZE);
+            	odometer.setY(TILE_SIZE + SENSOR_CENTER_CORRECTION);
+            	verti = false;
+            	break;
           }
         } else {
           //horizental
@@ -65,23 +72,31 @@ public class OdometryCorrection implements Runnable {
               odometer.setX(TILE_SIZE - SENSOR_CENTER_CORRECTION);
               break;
             case 5:
-              odometer.setX(TILE_SIZE * 2.0 - SENSOR_CENTER_CORRECTION);
-              break;
+            	//internalReading = odometer.getXYT()[0]-(TILE_SIZE - SENSOR_CENTER_CORRECTION);
+            	//System.out.println("Internal X: " + internalReading + ", ratio: " + internalReading/TILE_SIZE);
+            	odometer.setX(TILE_SIZE * 2.0 - SENSOR_CENTER_CORRECTION);
+            	break;
             case 6:
-              odometer.setX(TILE_SIZE * 3.0 - SENSOR_CENTER_CORRECTION);
-              verti = true;
-              break;
+            	//internalReading = odometer.getXYT()[0]-(TILE_SIZE * 2.0 - SENSOR_CENTER_CORRECTION);
+            	//System.out.println("Internal X: " + internalReading + ", ratio: " + internalReading/TILE_SIZE);
+            	odometer.setX(TILE_SIZE * 3.0 - SENSOR_CENTER_CORRECTION);
+            	verti = true;
+            	break;
           //moving in negative x direction
             case 10:
-              odometer.setX(TILE_SIZE * 3.0 + SENSOR_CENTER_CORRECTION);
+              odometer.setX(TILE_SIZE * 3.0 - SENSOR_CENTER_CORRECTION);
               break;
             case 11:
-              odometer.setX(TILE_SIZE * 2.0 + SENSOR_CENTER_CORRECTION);
-              break;
+            	//internalReading = odometer.getXYT()[0]-(TILE_SIZE * 3.0 + SENSOR_CENTER_CORRECTION);
+            	//System.out.println("Internal X: " + internalReading + ", ratio: " + internalReading/TILE_SIZE);
+            	odometer.setX(TILE_SIZE * 2.0 + SENSOR_CENTER_CORRECTION);
+            	break;
             case 12:
-              odometer.setX(TILE_SIZE + SENSOR_CENTER_CORRECTION);
-              verti = true;
-              break;
+            	//internalReading = odometer.getXYT()[0]-(TILE_SIZE *2.0 + SENSOR_CENTER_CORRECTION);
+            	//System.out.println("Internal X: " + internalReading + ", ratio: " + internalReading/TILE_SIZE);
+            	odometer.setX(TILE_SIZE + SENSOR_CENTER_CORRECTION);
+            	verti = true;
+            	break;
           }
         }
         walkingOnWood = false;

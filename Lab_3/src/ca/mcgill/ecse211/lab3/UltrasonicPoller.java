@@ -2,6 +2,8 @@ package ca.mcgill.ecse211.lab3;
 
 import static ca.mcgill.ecse211.lab3.Resources.*;
 
+import java.util.Arrays;
+
 /**
  * Samples the US sensor and invokes the selected controller on each cycle.
  * 
@@ -12,13 +14,13 @@ import static ca.mcgill.ecse211.lab3.Resources.*;
  * or about 14 Hz.
  */
 public class UltrasonicPoller implements Runnable {
-
-  public static UltrasonicController controller;
+  private int distance;
   private float[] usData;
+  private int [] filterBuffer;
+  private static final int BUFFER_SIZE = 21;
 
   public UltrasonicPoller() {
     usData = new float[US_SENSOR.sampleSize()];
-    controller = new UltrasonicController();
   }
 
   /*
@@ -28,16 +30,44 @@ public class UltrasonicPoller implements Runnable {
    * @see java.lang.Thread#run()
    */
   public void run() {
-    int distance;
+	int reading;
     while (true) {
       US_SENSOR.getDistanceMode().fetchSample(usData, 0); // acquire distance data in meters
-      distance = (int) (usData[0] * 100.0); // extract from buffer, convert to cm, cast to int
-      controller.processUSData(distance); // now take action depending on value
+      reading = (int) (usData[0] * 100.0); // extract from buffer, convert to cm, cast to int
+      short count = 0;
+      if (count < BUFFER_SIZE) {
+    	  filterBuffer[count] = reading;
+    	  distance = reading;
+    	  count++;
+      }
+      else { //median filter
+    	  shiftArray(filterBuffer, reading);
+    	  int [] sample = filterBuffer.clone();
+    	  Arrays.sort(sample);
+    	  if (BUFFER_SIZE % 2 == 1) {
+    		  distance = sample[BUFFER_SIZE/2];
+    	  }
+    	  else {
+    		  distance = (sample[BUFFER_SIZE/2] + sample[BUFFER_SIZE/2 - 1])/2;
+    	  }
+      }
       try {
         Thread.sleep(50);
       } catch (Exception e) {
       } // Poor man's timed sampling
     }
+  }
+  
+  void shiftArray(int[] arr, int newI) {
+	  int size = arr.length;
+	  for (int i = 0; i < size - 1; i++) {
+		  arr[i] = arr [i+1];
+	  }
+	  arr[size-1] = newI;
+  }
+  
+  public int getReading () {
+	  return this.distance;
   }
 
 }

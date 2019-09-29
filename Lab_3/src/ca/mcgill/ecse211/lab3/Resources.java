@@ -8,16 +8,16 @@ import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 
 public class Resources {
-	
-	/**
-	 * Offset from the wall (cm).
-	 */
-	public static final int BAND_CENTER = 24;
-	  
-	  /**
-	   * Width of dead band (cm).
-	   */
-	public static final int BAND_WIDTH = 2;
+
+  /**
+   * Offset from the wall (cm).
+   */
+  public static final int BAND_CENTER = 24;
+
+  /**
+   * Width of dead band (cm).
+   */
+  public static final int BAND_WIDTH = 2;
 
   /**
    * The wheel radius in centimeters.
@@ -28,17 +28,17 @@ public class Resources {
    * The robot width in centimeters.
    */
   public static final double TRACK = 11.89;
-  
+
   /**
    * The speed at which the robot moves forward in degrees per second.
    */
   public static final int FORWARD_SPEED = 250;
-  
+
   /**
    * turning speed
    */
-  
- public static final int TURN_SPEED = 160;
+
+  public static final int TURN_SPEED = 160;
 
   /**
    * The speed at which the robot rotates in degrees per second.
@@ -84,13 +84,12 @@ public class Resources {
    * The odometer.
    */
   public static Odometer odometer = Odometer.getOdometer();
-  
+
   public static final int FILTER_OUT = 23;
-  
+
   /**
    * US sensor
    */
-  public static final EV3UltrasonicSensor US_SENSOR = 
-	      new EV3UltrasonicSensor(LocalEV3.get().getPort("S2"));
+  public static final EV3UltrasonicSensor US_SENSOR = new EV3UltrasonicSensor(LocalEV3.get().getPort("S2"));
 
 }

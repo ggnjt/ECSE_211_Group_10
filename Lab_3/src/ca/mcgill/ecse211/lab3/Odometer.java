@@ -98,18 +98,18 @@ public class Odometer implements Runnable {
       updateStart = System.currentTimeMillis();
 
       leftMotorTachoCount = leftMotor.getTachoCount();
-      rightMotorTachoCount = rightMotor.getTachoCount(); //reading tacho meter
+      rightMotorTachoCount = rightMotor.getTachoCount(); // reading tacho meter
 
       double dl = leftMotorTachoCount * WHEEL_RAD * Math.PI / 180.0;
-      double dr = rightMotorTachoCount * WHEEL_RAD * Math.PI / 180.0; //calculating traveled distance
-      double d = (dl + dr) * 0.5; //average displacement in cm
+      double dr = rightMotorTachoCount * WHEEL_RAD * Math.PI / 180.0; // calculating traveled distance
+      double d = (dl + dr) * 0.5; // average displacement in cm
       double dtheta = (dl - dr) / TRACK; // angle in radians
 
       double dy = Math.cos(((theta + dtheta) * Math.PI / 180.0)) * d;
-      double dx = Math.sin(((theta + dtheta) * Math.PI / 180.0)) * d; //traveled distance in cm
-      double dt = dtheta * 180.0 / Math.PI; //change in theta in degrees
+      double dx = Math.sin(((theta + dtheta) * Math.PI / 180.0)) * d; // traveled distance in cm
+      double dt = dtheta * 180.0 / Math.PI; // change in theta in degrees
       odo.update(dx, dy, dt);
-      
+
 
       // this ensures that the odometer only runs once every period
 

@@ -92,4 +92,8 @@ public class Resources {
    */
   public static final EV3UltrasonicSensor US_SENSOR = new EV3UltrasonicSensor(LocalEV3.get().getPort("S2"));
 
+  /**
+   * US Poller
+   */
+  public static final UltrasonicPoller usPoller = new UltrasonicPoller();
 }

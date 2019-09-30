@@ -2,8 +2,6 @@ package ca.mcgill.ecse211.lab3;
 
 import static ca.mcgill.ecse211.lab3.Resources.*;
 
-import java.util.Arrays;
-
 /**
  * Samples the US sensor and invokes the selected controller on each cycle.
  * 
@@ -15,8 +13,7 @@ import java.util.Arrays;
 public class UltrasonicPoller implements Runnable {
   private int distance;
   private float[] usData;
-  private int[] filterBuffer;
-  private static final int BUFFER_SIZE = 21;
+
 
   public UltrasonicPoller() {
     usData = new float[US_SENSOR.sampleSize()];
@@ -32,21 +29,7 @@ public class UltrasonicPoller implements Runnable {
     while (true) {
       US_SENSOR.getDistanceMode().fetchSample(usData, 0); // acquire distance data in meters
       reading = (int) (usData[0] * 100.0); // extract from buffer, convert to cm, cast to int
-      short count = 0;
-      if (count < BUFFER_SIZE) {
-        filterBuffer[count] = reading;
-        distance = reading;
-        count++;
-      } else { // median filter
-        shiftArray(filterBuffer, reading);
-        int[] sample = filterBuffer.clone();
-        Arrays.sort(sample);
-        if (BUFFER_SIZE % 2 == 1) {
-          distance = sample[BUFFER_SIZE / 2];
-        } else {
-          distance = (sample[BUFFER_SIZE / 2] + sample[BUFFER_SIZE / 2 - 1]) / 2;
-        }
-      }
+      distance = reading;
       try {
         Thread.sleep(50);
       } catch (Exception e) {
@@ -54,15 +37,7 @@ public class UltrasonicPoller implements Runnable {
     }
   }
 
-  void shiftArray(int[] arr, int newI) {
-    int size = arr.length;
-    for (int i = 0; i < size - 1; i++) {
-      arr[i] = arr[i + 1];
-    }
-    arr[size - 1] = newI;
-  }
-
-  public int getReading() {
+  public int getDistance() {
     return this.distance;
   }
 

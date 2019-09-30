@@ -9,11 +9,30 @@ import java.util.Arrays;
  */
 public class RobotDriver {
 
+  public static final int[][] ROUTE = {{2, 3}, {1, 3}, {3, 2}, {1, 1}};
+
+  enum WorkingState {
+    /** The initial state. */
+    INIT,
+    /** The turning state. */
+    TURNING,
+    /** The traveling state. */
+    TRAVELING,
+    /** The emergency state. */
+    EMERGENCY
+  };
+
+  /**
+   * The current state of the robot.
+   */
+  volatile WorkingState state;
+  volatile int wayPointIndex = 0;
+
   /**
    * Drives the robot in a square of size 3x3 Tiles. It is to be run in parallel with the odometer and odometer
    * correction classes to allow testing their functionality.
    */
-  public static void drive() {// spawn a new Thread to avoid this method blocking
+  public void drive() {// spawn a new Thread to avoid this method blocking
     (new Thread() {
       public void run() {
         // reset the motors
@@ -22,27 +41,95 @@ public class RobotDriver {
         leftMotor.setAcceleration(ACCELERATION);
         rightMotor.setAcceleration(ACCELERATION);
 
-
         // Sleep for 2 seconds
         Main.sleepFor(TIMEOUT_PERIOD);
 
-        turnTo(2, 3);
-        LorR();
-        goTo(2, 3);
-        LorR();
-        turnTo(1, 3);
-        LorR();
-        goTo(1, 3);
-        LorR();
-        turnTo(3, 2);
-        LorR();
-        goTo(3, 2);
-        LorR();
-        /**
-         * YP: not too sure what is the best way to switch between the threads...
-         */
+        // Start Routing
+        state = WorkingState.INIT;
+
+        while (wayPointIndex < ROUTE.length) {
+          Display.showText(state.toString() + " " + wayPointIndex);
+          int wayPointX = ROUTE[wayPointIndex][0];
+          int wayPointY = ROUTE[wayPointIndex][1];
+
+          switch (state) {
+            case INIT:
+              // is there more points to reach?
+              if (wayPointIndex < ROUTE.length) {
+                state = WorkingState.TURNING;
+              } else {
+                // done arrived at destination and no more way-points
+                return;
+              }
+              break;
+            case TURNING:
+              turnTo(wayPointX, wayPointY);
+              state = WorkingState.TRAVELING;
+              break;
+            case TRAVELING:
+              Thread detectObstacle = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                  int currentIndex = wayPointIndex;
+                  while (currentIndex == wayPointIndex) {
+                    int distance = usPoller.getDistance();
+                    if (distance < 10) {
+                      stopTheRobot();
+                      synchronized (state) {
+                        state = WorkingState.EMERGENCY;
+                      }
+                      break;
+                    }
+                  }
+                }
+              });
+
+              detectObstacle.start();
+
+              goTo(wayPointX, wayPointY);
+              try {
+                Thread.sleep(1000);
+              } catch (Exception e) {
+              } // Poor man's timed sampling
+              synchronized (state) {
+                if (state == WorkingState.TRAVELING) {
+                  state = WorkingState.INIT;
+                  detectObstacle.stop();
+                  wayPointIndex++;
+                }
+              }
+              break;
+            case EMERGENCY:
+              // avoid the obstacle
+              int angle = convertAngle(90.0);
+              int distance = convertDistance(2.0 / 3.0 * TILE_SIZE);
+
+              if (LorR()) {
+                // turn right
+                leftMotor.rotate(angle, true);
+                rightMotor.rotate(-angle, false);
+              } else {
+                // turn left
+                leftMotor.rotate(-angle, true);
+                rightMotor.rotate(angle, false);
+              }
+
+              leftMotor.rotate(distance, true);
+              rightMotor.rotate(distance, false);
+              state = WorkingState.INIT;
+              break;
+          }
+        }
       }
     }).start();
+  }
+
+  /**
+   * Stop the robot
+   */
+  public static void stopTheRobot() {
+    leftMotor.stop();
+    rightMotor.stop();
   }
 
   /**
@@ -113,11 +200,13 @@ public class RobotDriver {
     return convertAngle(calculateAngle(odo, X, Y));
   }
 
+  // This is a blocking Turn
   private static void turnTo(int X, int Y) {
     leftMotor.rotate(getAngleRotation(odometer, X, Y), true);
     rightMotor.rotate(-getAngleRotation(odometer, X, Y), false);
   }
 
+  // This is a blocking GoTo
   private static void goTo(int X, int Y) {
     leftMotor.rotate(convertDistance(calculateDistance(odometer, X, Y)), true);
     rightMotor.rotate(convertDistance(calculateDistance(odometer, X, Y)), false);

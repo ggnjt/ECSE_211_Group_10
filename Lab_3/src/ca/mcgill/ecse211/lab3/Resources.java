@@ -8,7 +8,6 @@ import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 
 public class Resources {
-
   /**
    * Offset from the wall (cm).
    */
@@ -27,7 +26,7 @@ public class Resources {
   /**
    * The robot width in centimeters.
    */
-  public static final double TRACK = 12.8; //(increase to underturn)
+  public static final double TRACK = 12.7; //(increase to underturn)
 
   /**
    * The speed at which the robot moves forward in degrees per second.

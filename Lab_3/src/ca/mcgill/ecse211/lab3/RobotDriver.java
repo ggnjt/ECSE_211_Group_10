@@ -105,7 +105,7 @@ public class RobotDriver {
               break;
             case EMERGENCY:
               // avoid the obstacle
-              int angle = convertAngle(95.0);
+              int angle = convertAngle(93.0);
               int distance = convertDistance(2.0 / 3.0 * TILE_SIZE);
 
               if (LorR()) {
@@ -234,7 +234,7 @@ public class RobotDriver {
     // double x = b/Math.tan(t) + a; //x intersect
     // double y = a*Math.atan(t) + b;
 
-    double m = Math.tan(t + Math.PI / 2); // slope
+    double m = 1.0 / Math.tan(t + Math.PI / 2); // slope
 
     double x1 = TILE_SIZE * 4 - x2; // y
     double y1 = TILE_SIZE * 4 - y2; // x

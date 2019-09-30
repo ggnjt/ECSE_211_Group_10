@@ -25,7 +25,7 @@ public class RobotDriver {
   /**
    * The current state of the robot.
    */
-  volatile WorkingState state;
+  volatile WorkingState state = WorkingState.INIT;
   volatile int wayPointIndex = 0;
 
   /**
@@ -50,7 +50,6 @@ public class RobotDriver {
         state = WorkingState.INIT;
 
         while (wayPointIndex < ROUTE.length) {
-          Display.showText(state.toString() + " " + wayPointIndex);
           int wayPointX = ROUTE[wayPointIndex][0];
           int wayPointY = ROUTE[wayPointIndex][1];
 
@@ -74,7 +73,7 @@ public class RobotDriver {
                 public void run() {
                   while (!Thread.interrupted()) {
                     int distance = usPoller.getDistance();
-                    if (distance < 10) {
+                    if (distance < 12) {
                       stopTheRobot();
                       synchronized (state) {
                         state = WorkingState.EMERGENCY;
@@ -106,7 +105,7 @@ public class RobotDriver {
               break;
             case EMERGENCY:
               // avoid the obstacle
-              int angle = convertAngle(90.0);
+              int angle = convertAngle(95.0);
               int distance = convertDistance(2.0 / 3.0 * TILE_SIZE);
 
               if (LorR()) {
@@ -237,6 +236,7 @@ public class RobotDriver {
     double x1 = TILE_SIZE * 4 - x2; 
     double y1 = TILE_SIZE * 4 - y2;
 
+
     double[] listOfX = new double[4];
     listOfX[0] = y1 / m;
     listOfX[1] = -x2;
@@ -252,6 +252,7 @@ public class RobotDriver {
     point[0] = (d1 > d2 ? listOfX[1] : listOfX[2]);
     point[1] = (d1 > d2 ? listOfX[1] * m : listOfX[2] * m);
     boolean neg = point[0] < 0;
+
     double add = 0;
     if (neg) {
       add = Math.PI;

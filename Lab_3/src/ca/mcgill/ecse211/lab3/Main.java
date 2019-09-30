@@ -1,7 +1,6 @@
 package ca.mcgill.ecse211.lab3;
 
 import static ca.mcgill.ecse211.lab3.Resources.*;
-import ca.mcgill.ecse211.lab3.RobotDriver;
 import lejos.hardware.Button;
 
 public class Main {
@@ -10,7 +9,8 @@ public class Main {
     odometer.setXYT(TILE_SIZE, TILE_SIZE, 0);
     new Thread(odometer).start();
     new Thread(usPoller).start();
-    new RobotDriver().drive();
+    new Thread(display).start();
+    robotDriver.drive();
 
     while (Button.waitForAnyPress() != Button.ID_ESCAPE) {
     }

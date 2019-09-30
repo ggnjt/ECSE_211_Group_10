@@ -70,8 +70,7 @@ public class RobotDriver {
               Thread detectObstacle = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                  int currentIndex = wayPointIndex;
-                  while (currentIndex == wayPointIndex) {
+                  while (!Thread.interrupted()) {
                     int distance = usPoller.getDistance();
                     if (distance < 10) {
                       stopTheRobot();
@@ -94,7 +93,11 @@ public class RobotDriver {
               synchronized (state) {
                 if (state == WorkingState.TRAVELING) {
                   state = WorkingState.INIT;
-                  detectObstacle.stop();
+                  try {
+                    detectObstacle.interrupt();
+                  } catch (Exception e) {
+
+                  }
                   wayPointIndex++;
                 }
               }

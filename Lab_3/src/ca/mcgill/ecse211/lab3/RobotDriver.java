@@ -9,7 +9,7 @@ import java.util.Arrays;
  */
 public class RobotDriver {
 
-  public static final int[][] ROUTE = {{2, 3}, {1, 3}, {3, 2}, {1, 1}};
+  public static final int[][] ROUTE = {{1, 3}, {3, 3}, {3, 1}, {1, 1}};
 
   enum WorkingState {
     /** The initial state. */
@@ -40,6 +40,8 @@ public class RobotDriver {
         rightMotor.stop();
         leftMotor.setAcceleration(ACCELERATION);
         rightMotor.setAcceleration(ACCELERATION);
+        leftMotor.setSpeed(150);
+        rightMotor.setSpeed(150);
 
         // Sleep for 2 seconds
         Main.sleepFor(TIMEOUT_PERIOD);
@@ -131,8 +133,8 @@ public class RobotDriver {
    * Stop the robot
    */
   public static void stopTheRobot() {
-    leftMotor.stop();
-    rightMotor.stop();
+    leftMotor.stop(true);
+    rightMotor.stop(false);
   }
 
   /**

@@ -229,16 +229,13 @@ public class RobotDriver {
      */
     double x2 = odometer.getXYT()[0]; // current x position
     double y2 = odometer.getXYT()[1]; // current y position
-    double theta = odometer.getXYT()[2];
-    double t = theta / 180 * Math.PI; // current theta
+    double theta = odometer.getXYT()[2]; //theta in degrees
+    double t = theta / 180 * Math.PI; // current theta in radians
 
-    // double x = b/Math.tan(t) + a; //x intersect
-    // double y = a*Math.atan(t) + b;
+    double m = (Math.tan((Math.PI/2.0) - t)); // slope
 
-    double m = Math.atan(t + Math.PI / 2); // slope
-
-    double x1 = TILE_SIZE * 4 - x2; // y
-    double y1 = TILE_SIZE * 4 - y2; // x
+    double x1 = TILE_SIZE * 4 - x2; 
+    double y1 = TILE_SIZE * 4 - y2;
 
     double[] listOfX = new double[4];
     listOfX[0] = y1 / m;
@@ -248,14 +245,13 @@ public class RobotDriver {
 
     Arrays.sort(listOfX);
 
-    double d1 = Math.sqrt(Math.pow(listOfX[1], 2) + Math.pow(listOfX[1] * m, 2));
-    double d2 = Math.sqrt(Math.pow(listOfX[2], 2) + Math.pow(listOfX[2] * m, 2));
+    double d1 = Math.sqrt(listOfX[1]*listOfX[1] + (listOfX[1] * m)*(listOfX[1] * m));
+    double d2 = Math.sqrt(listOfX[2]*listOfX[2] + (listOfX[2] * m)*(listOfX[2] * m));
 
     double[] point = new double[2];
     point[0] = (d1 > d2 ? listOfX[1] : listOfX[2]);
     point[1] = (d1 > d2 ? listOfX[1] * m : listOfX[2] * m);
-    boolean neg = point[1] < 0;
-    // System.out.println(point[0] + "," + point[1]);
+    boolean neg = point[0] < 0;
     double add = 0;
     if (neg) {
       add = Math.PI;

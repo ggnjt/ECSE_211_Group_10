@@ -25,7 +25,7 @@ public class RobotDriver {
   /**
    * The current state of the robot.
    */
-  volatile WorkingState state;
+  volatile WorkingState state = WorkingState.INIT;
   volatile int wayPointIndex = 0;
 
   /**
@@ -50,7 +50,6 @@ public class RobotDriver {
         state = WorkingState.INIT;
 
         while (wayPointIndex < ROUTE.length) {
-          Display.showText(state.toString() + " " + wayPointIndex);
           int wayPointX = ROUTE[wayPointIndex][0];
           int wayPointY = ROUTE[wayPointIndex][1];
 
@@ -235,7 +234,7 @@ public class RobotDriver {
     // double x = b/Math.tan(t) + a; //x intersect
     // double y = a*Math.atan(t) + b;
 
-    double m = Math.atan(t + Math.PI / 2); // slope
+    double m = Math.tan(t + Math.PI / 2); // slope
 
     double x1 = TILE_SIZE * 4 - x2; // y
     double y1 = TILE_SIZE * 4 - y2; // x

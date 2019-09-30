@@ -96,4 +96,14 @@ public class Resources {
    * US Poller
    */
   public static final UltrasonicPoller usPoller = new UltrasonicPoller();
+  
+  /**
+   * Display
+   */
+  public static final Display display = new Display();
+  
+  /**
+   * Robot Driver
+   */
+  public static final RobotDriver robotDriver = new RobotDriver();
 }

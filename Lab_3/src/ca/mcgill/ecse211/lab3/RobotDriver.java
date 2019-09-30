@@ -73,7 +73,7 @@ public class RobotDriver {
                 public void run() {
                   while (!Thread.interrupted()) {
                     int distance = usPoller.getDistance();
-                    if (distance < 10) {
+                    if (distance < 12) {
                       stopTheRobot();
                       synchronized (state) {
                         state = WorkingState.EMERGENCY;
@@ -253,7 +253,7 @@ public class RobotDriver {
     double[] point = new double[2];
     point[0] = (d1 > d2 ? listOfX[1] : listOfX[2]);
     point[1] = (d1 > d2 ? listOfX[1] * m : listOfX[2] * m);
-    boolean neg = point[1] < 0;
+    boolean neg = point[0] < 0;
     // System.out.println(point[0] + "," + point[1]);
     double add = 0;
     if (neg) {

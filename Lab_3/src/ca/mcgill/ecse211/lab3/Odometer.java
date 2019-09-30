@@ -145,10 +145,9 @@ public class Odometer implements Runnable {
         doneResetting.await(); // Using await() is lighter on the CPU than simple busy wait.
       }
 
-      double constant = 1.04;
-      position[0] = x * constant;
-      position[1] = y * constant;
-      position[2] = theta * constant;
+      position[0] = x;
+      position[1] = y;
+      position[2] = theta;
     } catch (InterruptedException e) {
       e.printStackTrace();
     } finally {

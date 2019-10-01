@@ -3,21 +3,24 @@ package ca.mcgill.ecse211.lab3;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.port.SensorPort;
-import lejos.hardware.sensor.EV3ColorSensor;
+//import lejos.hardware.port.SensorPort;
+//import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 
 public class Resources {
+	private static final double C = 1.0;
+	public static final double RC = 1.06;
+	
   /**
    * The wheel radius in centimeters.
    */
-  public static final double WHEEL_RAD = 2.18;
+  public static final double WHEEL_RAD = 2.20 * C;
 
   
   /**
    * The robot width in centimeters.
    */
-  public static final double TRACK = 12.0; //(increase to underturn)
+  public static final double TRACK = 12.1 * C; //(increase to underturn)
 
   /**
    * The speed at which the robot moves forward in degrees per second.
@@ -60,10 +63,6 @@ public class Resources {
    */
   public static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 370e136033e51238a324ddf626af33513100f361
   /**
    * The LCD.
    */

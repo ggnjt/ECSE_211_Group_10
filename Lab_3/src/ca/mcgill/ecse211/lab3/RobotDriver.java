@@ -8,9 +8,10 @@ import java.util.Arrays;
  * This class is used to drive the robot on the demo floor.
  */
 public class RobotDriver {
-
+	private static final double TILE_RATIO = 1.0;
+  //public static final int[][] ROUTE = {{3, 3}, {1, 3}, {3, 1}, {1, 1}};
   public static final int[][] ROUTE = {{1, 3}, {3, 3}, {3, 1}, {1, 1}};
-
+  
   enum WorkingState {
     /** The initial state. */
     INIT,
@@ -105,8 +106,8 @@ public class RobotDriver {
               break;
             case EMERGENCY:
               // avoid the obstacle
-              int angle = convertAngle(93.0);
-              int distance = convertDistance(0.5 * TILE_SIZE);
+              int angle = convertAngle(80);
+              int distance = convertDistance(TILE_RATIO * TILE_SIZE);
 
               if (LorR()) {
                 // turn right
@@ -233,9 +234,9 @@ public class RobotDriver {
     	theta -= 360;
     }
     double t = theta / 180 * Math.PI; // current theta in radians
-    System.out.println(theta);
+    //System.out.println(theta);
     double m = 1/(Math.tan((Math.PI/2.0) + t)); // slope
-    System.out.println("m is: " + m);
+    //System.out.println("m is: " + m);
     double x1 = TILE_SIZE * 4 - x2; 
     double y1 = TILE_SIZE * 4 - y2;
 
@@ -245,9 +246,9 @@ public class RobotDriver {
     listOfX[1] = -x2;
     listOfX[2] = y1 / m;
     listOfX[3] = -y2 / m;
-    System.out.println(Arrays.toString(listOfX));
+    //System.out.println(Arrays.toString(listOfX));
     Arrays.sort(listOfX);
-    System.out.println(Arrays.toString(listOfX));
+    //System.out.println(Arrays.toString(listOfX));
     double d1 = Math.sqrt(listOfX[1]*listOfX[1] + (listOfX[1] * m)*(listOfX[1] * m));
     double d2 = Math.sqrt(listOfX[2]*listOfX[2] + (listOfX[2] * m)*(listOfX[2] * m));
 

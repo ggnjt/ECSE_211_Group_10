@@ -105,8 +105,8 @@ public class RobotDriver {
               break;
             case EMERGENCY:
               // avoid the obstacle
-              int angle = convertAngle(95.0);
-              int distance = convertDistance(2.0 / 3.0 * TILE_SIZE);
+              int angle = convertAngle(93.0);
+              int distance = convertDistance(0.5 * TILE_SIZE);
 
               if (LorR()) {
                 // turn right

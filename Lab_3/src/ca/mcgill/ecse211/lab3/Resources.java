@@ -8,16 +8,16 @@ import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 
 public class Resources {
-
   /**
    * The wheel radius in centimeters.
    */
-  public static final double WHEEL_RAD = 2.21;
+  public static final double WHEEL_RAD = 2.18;
 
+  
   /**
    * The robot width in centimeters.
    */
-  public static final double TRACK = 11.89;
+  public static final double TRACK = 12.0; //(increase to underturn)
 
   /**
    * The speed at which the robot moves forward in degrees per second.
@@ -60,7 +60,10 @@ public class Resources {
    */
   public static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 370e136033e51238a324ddf626af33513100f361
   /**
    * The LCD.
    */

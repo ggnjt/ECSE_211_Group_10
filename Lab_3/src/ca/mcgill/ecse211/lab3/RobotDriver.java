@@ -35,13 +35,10 @@ public class RobotDriver {
   public void drive() {// spawn a new Thread to avoid this method blocking
     (new Thread() {
       public void run() {
-        // reset the motors
-        leftMotor.stop();
-        rightMotor.stop();
-        leftMotor.setAcceleration(ACCELERATION);
-        rightMotor.setAcceleration(ACCELERATION);
-        leftMotor.setSpeed(150);
-        rightMotor.setSpeed(150);
+        // reset the motors and set the speed
+        stopTheRobot();
+        setAcceleration(ACCELERATION);
+        setSpeed(FORWARD_SPEED);
 
         // Sleep for 2 seconds
         Main.sleepFor(TIMEOUT_PERIOD);
@@ -112,14 +109,22 @@ public class RobotDriver {
                 // turn right
                 leftMotor.rotate(angle, true);
                 rightMotor.rotate(-angle, false);
+                leftMotor.setSpeed(TURN_SPEED);
+                
+                leftMotor.rotate((int) (distance * ((TURN_SPEED * 1.0) / FORWARD_SPEED)), true);
+                rightMotor.rotate(distance, false);
               } else {
                 // turn left
                 leftMotor.rotate(-angle, true);
                 rightMotor.rotate(angle, false);
+                rightMotor.setSpeed(TURN_SPEED);
+
+                leftMotor.rotate(distance, true);
+                rightMotor.rotate((int) (distance * ((TURN_SPEED * 1.0) / FORWARD_SPEED)), false);
               }
 
-              leftMotor.rotate(distance, true);
-              rightMotor.rotate(distance, false);
+              
+              setSpeed(FORWARD_SPEED);
               state = WorkingState.INIT;
               break;
           }
@@ -134,6 +139,22 @@ public class RobotDriver {
   public static void stopTheRobot() {
     leftMotor.stop(true);
     rightMotor.stop(false);
+  }
+  
+  /**
+   * set acceleration for both motors
+   */
+  public static void setAcceleration(int acceleration) {
+    leftMotor.setAcceleration(acceleration);
+    rightMotor.setAcceleration(acceleration);
+  }
+  
+  /**
+   * set Speed
+   */
+  public static void setSpeed(int speed) {
+    leftMotor.setSpeed(speed);
+    rightMotor.setSpeed(speed);
   }
 
   /**

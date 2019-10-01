@@ -32,13 +32,13 @@ public class Resources {
   /**
    * The speed at which the robot moves forward in degrees per second.
    */
-  public static final int FORWARD_SPEED = 250;
+  public static final int FORWARD_SPEED = 150;
 
   /**
    * turning speed
    */
 
-  public static final int TURN_SPEED = 160;
+  public static final int TURN_SPEED = 200;
 
   /**
    * The speed at which the robot rotates in degrees per second.

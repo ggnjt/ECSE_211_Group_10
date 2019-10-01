@@ -10,16 +10,6 @@ import lejos.hardware.sensor.EV3UltrasonicSensor;
 public class Resources {
 
   /**
-   * Offset from the wall (cm).
-   */
-  public static final int BAND_CENTER = 24;
-
-  /**
-   * Width of dead band (cm).
-   */
-  public static final int BAND_WIDTH = 2;
-
-  /**
    * The wheel radius in centimeters.
    */
   public static final double WHEEL_RAD = 2.21;
@@ -70,10 +60,6 @@ public class Resources {
    */
   public static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 
-  /**
-   * The color sensor.
-   */
-  public static final EV3ColorSensor colorSensor = new EV3ColorSensor(SensorPort.S1);
 
   /**
    * The LCD.

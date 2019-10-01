@@ -229,29 +229,32 @@ public class RobotDriver {
     double x2 = odometer.getXYT()[0]; // current x position
     double y2 = odometer.getXYT()[1]; // current y position
     double theta = odometer.getXYT()[2]; //theta in degrees
+    if (theta > 180) {
+    	theta -= 360;
+    }
     double t = theta / 180 * Math.PI; // current theta in radians
-
-    double m = (Math.tan((Math.PI/2.0) - t)); // slope
-
+    System.out.println(theta);
+    double m = 1/(Math.tan((Math.PI/2.0) + t)); // slope
+    System.out.println("m is: " + m);
     double x1 = TILE_SIZE * 4 - x2; 
     double y1 = TILE_SIZE * 4 - y2;
 
 
     double[] listOfX = new double[4];
-    listOfX[0] = y1 / m;
+    listOfX[0] = x1;
     listOfX[1] = -x2;
-    listOfX[2] = x1;
+    listOfX[2] = y1 / m;
     listOfX[3] = -y2 / m;
-
+    System.out.println(Arrays.toString(listOfX));
     Arrays.sort(listOfX);
-
+    System.out.println(Arrays.toString(listOfX));
     double d1 = Math.sqrt(listOfX[1]*listOfX[1] + (listOfX[1] * m)*(listOfX[1] * m));
     double d2 = Math.sqrt(listOfX[2]*listOfX[2] + (listOfX[2] * m)*(listOfX[2] * m));
 
     double[] point = new double[2];
     point[0] = (d1 > d2 ? listOfX[1] : listOfX[2]);
     point[1] = (d1 > d2 ? listOfX[1] * m : listOfX[2] * m);
-    boolean neg = point[0] < 0;
+    boolean neg = point[1] < 0;
 
     double add = 0;
     if (neg) {

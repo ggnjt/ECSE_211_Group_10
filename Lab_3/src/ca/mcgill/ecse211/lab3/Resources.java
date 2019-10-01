@@ -23,10 +23,11 @@ public class Resources {
    */
   public static final double WHEEL_RAD = 2.18;
 
+  
   /**
    * The robot width in centimeters.
    */
-  public static final double TRACK = 12.7; //(increase to underturn)
+  public static final double TRACK = 12.0; //(increase to underturn)
 
   /**
    * The speed at which the robot moves forward in degrees per second.

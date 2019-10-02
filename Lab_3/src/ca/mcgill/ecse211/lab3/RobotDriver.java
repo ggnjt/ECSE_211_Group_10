@@ -8,9 +8,9 @@ import java.util.Arrays;
  * This class is used to drive the robot on the demo floor.
  */
 public class RobotDriver {
-	private static final double TILE_RATIO = 1.0;
-  //public static final int[][] ROUTE = {{3, 3}, {1, 3}, {3, 1}, {1, 1}};
-  public static final int[][] ROUTE = {{1, 3}, {3, 3}, {3, 1}, {1, 1}};
+	private static final double TILE_RATIO = 1.8;
+  public static final int[][] ROUTE = {{1, 3}, {2, 2}, {3, 3}, {3, 2}, {2, 1}};
+  //public static final int[][] ROUTE = {{1, 3}, {3, 3}, {3, 1}, {1, 1}};
   
   enum WorkingState {
     /** The initial state. */
@@ -71,7 +71,8 @@ public class RobotDriver {
                 public void run() {
                   while (!Thread.interrupted()) {
                     int distance = usPoller.getDistance();
-                    if (distance < 12) {
+                  //if the distance detected by the US sensor is less than a set number, enter the EMERGENCY state
+                    if (distance < 14) { 
                       stopTheRobot();
                       synchronized (state) {
                         state = WorkingState.EMERGENCY;
@@ -103,27 +104,27 @@ public class RobotDriver {
               break;
             case EMERGENCY:
               // avoid the obstacle
-              int angle = convertAngle(80);
+              int angle = convertAngle(90);
               int distance = convertDistance(TILE_RATIO * TILE_SIZE);
 
               if (LorR()) {
                 // turn right
                 leftMotor.rotate(angle, true);
                 rightMotor.rotate(-angle, false);
-                leftMotor.setSpeed(TURN_SPEED);
+                rightMotor.setSpeed(TURN_SPEED);
                 
-                leftMotor.rotate((int) (distance * ((TURN_SPEED * 1.0) / FORWARD_SPEED)), true);
-                rightMotor.rotate(distance, false);
+                leftMotor.rotate(distance, true);
+                rightMotor.rotate((int)(distance * (TURN_SPEED * 1.0)/FORWARD_SPEED ), false);
               } else {
                 // turn left
                 leftMotor.rotate(-angle, true);
                 rightMotor.rotate(angle, false);
-                rightMotor.setSpeed(TURN_SPEED);
+                leftMotor.setSpeed(TURN_SPEED);
 
-                leftMotor.rotate(distance, true);
-                rightMotor.rotate((int) (distance * ((TURN_SPEED * 1.0) / FORWARD_SPEED)), false);
+                leftMotor.rotate((int)(distance * (TURN_SPEED * 1.0)/FORWARD_SPEED ), true);
+                rightMotor.rotate(distance, false);
               }
-
+              
               
               setSpeed(FORWARD_SPEED);
               state = WorkingState.INIT;
@@ -226,13 +227,13 @@ public class RobotDriver {
     return convertAngle(calculateAngle(odo, X, Y));
   }
 
-  // This is a blocking Turn
+  // This is a blocking Turn (blocks other threads)
   private static void turnTo(int X, int Y) {
     leftMotor.rotate(getAngleRotation(odometer, X, Y), true);
     rightMotor.rotate(-getAngleRotation(odometer, X, Y), false);
   }
 
-  // This is a blocking GoTo
+  // This is a blocking GoTo (blocks other threads)
   private static void goTo(int X, int Y) {
     leftMotor.rotate(convertDistance(calculateDistance(odometer, X, Y)), true);
     rightMotor.rotate(convertDistance(calculateDistance(odometer, X, Y)), false);
@@ -255,9 +256,7 @@ public class RobotDriver {
     	theta -= 360;
     }
     double t = theta / 180 * Math.PI; // current theta in radians
-    //System.out.println(theta);
     double m = 1/(Math.tan((Math.PI/2.0) + t)); // slope
-    //System.out.println("m is: " + m);
     double x1 = TILE_SIZE * 4 - x2; 
     double y1 = TILE_SIZE * 4 - y2;
 
@@ -267,9 +266,7 @@ public class RobotDriver {
     listOfX[1] = -x2;
     listOfX[2] = y1 / m;
     listOfX[3] = -y2 / m;
-    //System.out.println(Arrays.toString(listOfX));
     Arrays.sort(listOfX);
-    //System.out.println(Arrays.toString(listOfX));
     double d1 = Math.sqrt(listOfX[1]*listOfX[1] + (listOfX[1] * m)*(listOfX[1] * m));
     double d2 = Math.sqrt(listOfX[2]*listOfX[2] + (listOfX[2] * m)*(listOfX[2] * m));
 
@@ -282,9 +279,6 @@ public class RobotDriver {
     if (neg) {
       add = Math.PI;
     }
-    // System.out.println(t);
-    // System.out.println(Math.atan(point[0]/point[1])-t+add);
-    // System.out.println((Math.atan(point[0]/point[1])-t+add > 0));
     return Math.atan(point[0] / point[1]) - t + add > 0;
   }
 

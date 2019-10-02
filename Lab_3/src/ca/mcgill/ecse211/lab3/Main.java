@@ -9,7 +9,7 @@ public class Main {
     odometer.setXYT(TILE_SIZE, TILE_SIZE, 0);
     new Thread(odometer).start();
     new Thread(usPoller).start();
-    new Thread(display).start();
+  //new Thread(display).start();
     robotDriver.drive();
 
     while (Button.waitForAnyPress() != Button.ID_ESCAPE) {

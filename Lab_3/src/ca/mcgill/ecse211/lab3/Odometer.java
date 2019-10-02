@@ -105,9 +105,9 @@ public class Odometer implements Runnable {
       double d = (dl + dr) * 0.5; // average displacement in cm
       double dtheta = (dl - dr) / TRACK; // angle in radians
 
-      double dy = Math.cos(((theta + dtheta) * Math.PI / 180.0)) * d * RC;
-      double dx = Math.sin(((theta + dtheta) * Math.PI / 180.0)) * d * RC;; // traveled distance in cm
-      double dt = dtheta * 180.0 / Math.PI; // change in theta in degrees
+      double dy = Math.cos(((theta + dtheta) * Math.PI / 180.0)) * d * YC;
+      double dx = Math.sin(((theta + dtheta) * Math.PI / 180.0)) * d * XC;; // traveled distance in cm
+      double dt = dtheta * 180.0 / Math.PI * TC; // change in theta in degrees
       odo.update(dx, dy, dt);
 
 

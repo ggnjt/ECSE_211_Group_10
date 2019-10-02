@@ -8,21 +8,18 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 
 public class Resources {
-	private static final double C = 1;
-	public static final double YC = 1;
-	public static final double XC = 1;
-	public static final double TC = 1;
+
 	
   /**
    * The wheel radius in centimeters.
    */
-  public static final double WHEEL_RAD = 2.21 * C;
+  public static final double WHEEL_RAD = 2.21;
 
   
   /**
    * The robot width in centimeters.
    */
-  public static final double TRACK = 11.8 * C; 
+  public static final double TRACK = 11.8; 
 
   /**
    * The speed at which the robot moves forward in degrees per second.

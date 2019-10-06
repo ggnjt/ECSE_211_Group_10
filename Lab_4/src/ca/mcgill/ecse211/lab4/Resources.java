@@ -70,7 +70,7 @@ public class Resources {
   public static final TextLCD LCD = LocalEV3.get().getTextLCD();
 
   /**
-   * The odometer.
+   * The Odometer.
    */
   public static Odometer odometer = Odometer.getOdometer();
 
@@ -106,5 +106,8 @@ public class Resources {
    */
   public static final RobotDriver robotDriver = new RobotDriver();
   
+  /**
+   * Odometer correction
+   */
   public static final OdometryCorrection oc = new OdometryCorrection();
 }

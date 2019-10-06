@@ -18,9 +18,9 @@ public class OdometryCorrection implements Runnable {
 	    ALIGN_X,
 	    //state of first crossing the y=1 line after aligning with the y=1 line
 	    CROSS_Y,
-	    //state turning to theta = 180, marching forward, turning to theta = 90 marching forward until x=1 line
+	    //state turning to theta = 180, marching forward, turning to theta = 270 backing up until x=1 line
 	    SEEK_X,
-	    //turn until y line is met, travel to (1,1) way point with odometer
+	    //turn until x=1 line is met, travel to (1,1) way point with odometer
 	    ALIGN_Y,
 	    //finish
 	    FINISHED;
@@ -65,6 +65,7 @@ public class OdometryCorrection implements Runnable {
     		  break;
     	  }
       case CROSS_Y:
+    	  //third stage, the robot moves in the -y direction until the sensor meets the line again
     	  if (detectBlackLine()) {
     		  Sound.beep();
     		  odometer.setY(TILE_SIZE-SENSOR_CENTER_CORRECTION);
@@ -74,6 +75,8 @@ public class OdometryCorrection implements Runnable {
     		  break;
     	  }
       case SEEK_X:
+    	  //4th statge, robot continues forward in -y direction, then turns to -x direction, 
+    	  //moves backwards until it detects a black line
     	  if (detectBlackLine()) {
     		  Sound.beep();
     		  odometer.setX(TILE_SIZE-SENSOR_CENTER_CORRECTION);
@@ -82,6 +85,8 @@ public class OdometryCorrection implements Runnable {
     	      Main.sleepFor(1500);
     		  break;
     	  }
+    	  //5th stage, the robot continues to move until the center is aligned with the black line, turns in place towards
+    	  //the +y direction until the sensor detects the x=1 line, then moves forward to the (1,1) point
       case ALIGN_Y:
     	  if (detectBlackLine()) {
     		  Sound.beep();
@@ -91,9 +96,11 @@ public class OdometryCorrection implements Runnable {
     	      Main.sleepFor(1500);
     		  break;
     	  }
+    	  
       case FINISHED:
+    	  //final statge, robot is stopped at (1,1), and the coordinates are reset
     	  robotDriver.seekAndAlign(this);
-		  odometer.setTheta(0.0);
+		  odometer.setXYT(TILE_SIZE,TILE_SIZE,0.0);
     	  break; 
       }
       // this ensures the odometry correction occurs only once every period

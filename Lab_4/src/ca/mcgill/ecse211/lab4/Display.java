@@ -3,38 +3,33 @@ package ca.mcgill.ecse211.lab4;
 import static ca.mcgill.ecse211.lab4.Resources.LCD;
 import static ca.mcgill.ecse211.lab4.Resources.oc;
 import static ca.mcgill.ecse211.lab4.Resources.odometer;
-import static ca.mcgill.ecse211.lab4.Resources.robotDriver;
-import static ca.mcgill.ecse211.lab4.Resources.usPoller;
 import java.text.DecimalFormat;
 
 public class Display implements Runnable {
 
   private double[] position;
-  private final long DISPLAY_PERIOD = 550;
+  private final long DISPLAY_PERIOD = 450;
   private long timeout = Long.MAX_VALUE;
 
   public void run() {
     LCD.clear();
-
     long updateStart, updateEnd;
-
     long tStart = System.currentTimeMillis();
     do {
       LCD.clear();
       updateStart = System.currentTimeMillis();
 
       // Retrieve x, y and Theta information
-      // position = odometer.getXYT();
-      LCD.drawString(oc.currentState.toString(), 0, 0);
-      // Print x,y, and theta information
-      // DecimalFormat numberFormat = new DecimalFormat("######0.00");
-      // LCD.drawString("X: " + numberFormat.format(position[0]), 0, 0);
-      // LCD.drawString("Y: " + numberFormat.format(position[1]), 0, 1);
-      // LCD.drawString("T: " + numberFormat.format(position[2]), 0, 2);
-      // Print the uspoller info
-      // LCD.drawString("Distance: " + usPoller.getDistance(), 0, 4);
+      position = odometer.getXYT();
 
-      // this ensures that the data is updated only once every period
+      // Print x,y, and theta information
+      DecimalFormat numberFormat = new DecimalFormat("######0.00");
+      LCD.drawString("X: " + numberFormat.format(position[0]), 0, 0);
+      LCD.drawString("Y: " + numberFormat.format(position[1]), 0, 1);
+      LCD.drawString("T: " + numberFormat.format(position[2]), 0, 2);
+
+      LCD.drawString(oc.currentState.toString(), 0, 3);
+
       updateEnd = System.currentTimeMillis();
       if (updateEnd - updateStart < DISPLAY_PERIOD) {
         try {

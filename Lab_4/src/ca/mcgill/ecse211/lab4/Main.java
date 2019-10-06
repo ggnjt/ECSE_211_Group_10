@@ -21,7 +21,6 @@ public class Main {
     c.stop();
 
     // start second part
-    odometer.setXYT(TILE_SIZE, TILE_SIZE, 0);
     new Thread(odometer).start();
     new Thread(display).start();
     new Thread(oc).start();

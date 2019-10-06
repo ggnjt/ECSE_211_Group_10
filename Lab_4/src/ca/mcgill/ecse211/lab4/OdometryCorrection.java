@@ -2,6 +2,8 @@ package ca.mcgill.ecse211.lab4;
 
 import static ca.mcgill.ecse211.lab4.Resources.*;
 import java.util.Arrays;
+
+import ca.mcgill.ecse211.lab4.OdometryCorrection.WorkingState;
 import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 
@@ -9,7 +11,7 @@ import lejos.robotics.SampleProvider;
 
 public class OdometryCorrection implements Runnable {
   private static final long CORRECTION_PERIOD = 10;
-  static final double SENSOR_CENTER_CORRECTION = 2.2; //distance form the sensor to the center of the vehicle (cm)
+  static final double SENSOR_CENTER_CORRECTION = 12.2; //distance form the sensor to the center of the vehicle (cm)
  //states
   enum WorkingState {
 	    //state seeking y=1 black line with unknown theta
@@ -25,7 +27,7 @@ public class OdometryCorrection implements Runnable {
 	    //finish
 	    FINISHED;
   };
-  WorkingState currentState;
+  WorkingState currentState =WorkingState.SEEK_Y;
   // sensor
   private SampleProvider sampleProvider = colorSensor.getRedMode();
   private float[] sampleColor = new float[colorSensor.sampleSize()];
@@ -51,7 +53,7 @@ public class OdometryCorrection implements Runnable {
     		  odometer.setY(TILE_SIZE-SENSOR_CENTER_CORRECTION);
     		  currentState = WorkingState.ALIGN_X;
     		  robotDriver.seekAndAlign(this);
-    	      Main.sleepFor(1500); //sleeps the thread to avoid reading the same black line more than once
+    	      Main.sleepFor(700); //sleeps the thread to avoid reading the same black line more than once
     		  break;
     	  }
       case ALIGN_X: 
@@ -61,7 +63,7 @@ public class OdometryCorrection implements Runnable {
     		  odometer.setTheta(90.0);
     		  currentState = WorkingState.CROSS_Y;
     		  robotDriver.seekAndAlign(this);
-    	      Main.sleepFor(1500);
+    	      Main.sleepFor(700);
     		  break;
     	  }
       case CROSS_Y:
@@ -71,7 +73,7 @@ public class OdometryCorrection implements Runnable {
     		  odometer.setY(TILE_SIZE-SENSOR_CENTER_CORRECTION);
     		  currentState = WorkingState.SEEK_X;
     		  robotDriver.seekAndAlign(this);
-    	      Main.sleepFor(1500); //sleeps the thread to avoid reading the same black line more than once
+    	      Main.sleepFor(700); //sleeps the thread to avoid reading the same black line more than once
     		  break;
     	  }
       case SEEK_X:
@@ -82,7 +84,7 @@ public class OdometryCorrection implements Runnable {
     		  odometer.setX(TILE_SIZE-SENSOR_CENTER_CORRECTION);
     		  currentState = WorkingState.ALIGN_Y;
     		  robotDriver.seekAndAlign(this);
-    	      Main.sleepFor(1500);
+    	      Main.sleepFor(700);
     		  break;
     	  }
     	  //5th stage, the robot continues to move until the center is aligned with the black line, turns in place towards
@@ -93,10 +95,9 @@ public class OdometryCorrection implements Runnable {
     		  odometer.setX(TILE_SIZE-SENSOR_CENTER_CORRECTION);
     		  robotDriver.seekAndAlign(this);
     		  currentState = WorkingState.FINISHED;
-    	      Main.sleepFor(1500);
+    	      Main.sleepFor(700);
     		  break;
-    	  }
-    	  
+    	  } 
       case FINISHED:
     	  //final statge, robot is stopped at (1,1), and the coordinates are reset
     	  robotDriver.seekAndAlign(this);
@@ -112,9 +113,9 @@ public class OdometryCorrection implements Runnable {
   }
   
   boolean detectBlackLine() { 
-	 // System.out.println(sampleColor[0]);
-	  return sampleColor[0] < 2.0;
-	  
+	  //System.out.println(sampleColor[0]);
+	  return sampleColor[0] < 0.45;
+	  //return false;
 //	  //TODO: this needs some more work
 //	  sampleProvider.fetchSample(sampleColor, 0);
 //      derivative = sampleColor[0] - prev;

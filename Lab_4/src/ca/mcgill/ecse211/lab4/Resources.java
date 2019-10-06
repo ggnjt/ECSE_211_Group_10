@@ -79,7 +79,7 @@ public class Resources {
   /**
    * US sensor
    */
-  public static final EV3UltrasonicSensor US_SENSOR = new EV3UltrasonicSensor(SensorPort.S1);
+  public static final EV3UltrasonicSensor US_SENSOR = new EV3UltrasonicSensor(SensorPort.S2);
 
   /**
    * US Poller
@@ -89,7 +89,7 @@ public class Resources {
   /**
    * The color sensor.
    */
-  public static final EV3ColorSensor colorSensor = new EV3ColorSensor(SensorPort.S2);
+  public static final EV3ColorSensor colorSensor = new EV3ColorSensor(SensorPort.S1);
   
   /**
    * Display

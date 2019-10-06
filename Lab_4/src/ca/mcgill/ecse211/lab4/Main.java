@@ -10,7 +10,6 @@ public class Main {
     new Thread(odometer).start();
     //new Thread(usPoller).start();
     new Thread(display).start();
-
     new Thread(oc).start();
     while (Button.waitForAnyPress() != Button.ID_ESCAPE) {
     }

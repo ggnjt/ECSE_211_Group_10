@@ -9,7 +9,7 @@ import java.util.Arrays;
  */
 public class RobotDriver {
 	private static final double TILE_RATIO = 1.8;
-  public static final int[][] ROUTE = {{1, 3}, {2, 2}, {3, 3}, {3, 2}, {2, 1}};
+  public static final int[][] ROUTE = {{3, 2}, {2, 2}, {2, 3}, {3, 1}};
   //public static final int[][] ROUTE = {{1, 3}, {3, 3}, {3, 1}, {1, 1}};
   
   enum WorkingState {

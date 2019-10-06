@@ -42,8 +42,6 @@ public class OdometryCorrection implements Runnable {
   public void run() {
     long correctionStart, correctionEnd;
     currentState = WorkingState.SEEK_Y;
-    leftMotor.forward();
-    rightMotor.forward();
     while (true) {
       correctionStart = System.currentTimeMillis();
       sampleProvider.fetchSample(sampleColor, 0);

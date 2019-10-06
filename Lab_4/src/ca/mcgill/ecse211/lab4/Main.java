@@ -6,16 +6,21 @@ import lejos.hardware.Button;
 public class Main {
 
   public static void main(String[] args) {
-    // first part
-    new Thread(usPoller).start();
-    new Thread(alignmentDriver).start();
-    new Thread(new AlignmentDriverDisplay()).start();
+    // start first part
+    Thread a = new Thread(usPoller);
+    Thread b = new Thread(alignmentDriver);
+    Thread c = new Thread(new AlignmentDriverDisplay());
+    a.start();
+    b.start();
+    c.start();
+    //wait for a button
     Button.waitForAnyPress();
-
     // kill first part
+    a.stop();
+    b.stop();
+    c.stop();
 
-
-    // second part
+    // start second part
     odometer.setXYT(TILE_SIZE, TILE_SIZE, 0);
     new Thread(odometer).start();
     new Thread(display).start();

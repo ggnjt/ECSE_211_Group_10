@@ -15,8 +15,9 @@ import java.util.Arrays;
 public class UltrasonicPoller implements Runnable {
   private int distance;
   private float[] usData;
-  private static final short BUFFER_SIZE = 21;
-  private int [] filterBuffer;
+  private static final short BUFFER_SIZE = 41;
+  private int[] filterBuffer = new int[BUFFER_SIZE];
+
   public UltrasonicPoller() {
     usData = new float[US_SENSOR.sampleSize()];
   }
@@ -27,47 +28,40 @@ public class UltrasonicPoller implements Runnable {
    * @see java.lang.Thread#run()
    */
   public void run() {
-	  int reading;
-	  while (true) {
-		  US_SENSOR.getDistanceMode().fetchSample(usData, 0); // acquire distance data in meters
-		  reading = (int) (usData[0] * 100.0); // extract from buffer, convert to cm, cast to int
-		  
-		  short count = 0;
-		  if (count < BUFFER_SIZE) {
-			  filterBuffer[count] = reading;
-			  distance = 10000;
-			  count++;
-		  }
-		  else { //median filter
-			  shiftArray(filterBuffer, reading);
-			  int [] sample = filterBuffer.clone();
-			  Arrays.sort(sample);
-			  if (BUFFER_SIZE % 2 == 1) {
-				  distance = sample[BUFFER_SIZE/2];
-			  }
-			  else {
-				  distance = (sample[BUFFER_SIZE/2] + sample[BUFFER_SIZE/2 - 1])/2;
-			  }
-			  distance = reading;
-		  }
-      
-		  try {
-			  Thread.sleep(50);
-		  } catch (Exception e) {
-		  } // Poor man's timed sampling
-	  }
+    int reading;
+    int count = 0;
+
+    while (true) {
+      US_SENSOR.getDistanceMode().fetchSample(usData, 0); // acquire distance data in meters
+      reading = (int) (usData[0] * 100.0); // extract from buffer, convert to cm, cast to int
+
+      if (count < BUFFER_SIZE) {
+        filterBuffer[count] = reading;
+        distance = -1;
+        count++;
+      } else { // median filter
+        shiftArray(filterBuffer, reading);
+        int[] sample = filterBuffer.clone();
+        Arrays.sort(sample);
+        distance = sample[BUFFER_SIZE / 2];
+      }
+      try {
+        Thread.sleep(50);
+      } catch (Exception e) {
+      } // Poor man's timed sampling
+    }
   }
 
   void shiftArray(int[] arr, int newI) {
-	  int size = arr.length;
-	  for (int i = 0; i < size - 1; i++) {
-		  arr[i] = arr [i+1];
-	  }
-	  arr[size-1] = newI;
+    int size = arr.length;
+    for (int i = 0; i < size - 1; i++) {
+      arr[i] = arr[i + 1];
+    }
+    arr[size - 1] = newI;
   }
-  
+
   public int getDistance() {
-	  return this.distance;
+    return this.distance;
   }
 
 }

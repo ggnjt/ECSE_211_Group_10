@@ -12,10 +12,6 @@ import ca.mcgill.ecse211.lab4.OdometryCorrection.WorkingState;
  * This class is used to drive the robot on the demo floor.
  */
 public class RobotDriver {
-	
-	
-	
-
   /**
    * Stop the robot
    */
@@ -23,7 +19,7 @@ public class RobotDriver {
     leftMotor.stop(true);
     rightMotor.stop(false);
   }
-  
+
   /**
    * set acceleration for both motors
    */
@@ -31,7 +27,7 @@ public class RobotDriver {
     leftMotor.setAcceleration(acceleration);
     rightMotor.setAcceleration(acceleration);
   }
-  
+
   /**
    * set Speed
    */
@@ -62,6 +58,7 @@ public class RobotDriver {
 
   /**
    * calculates the displacement needed to move the the desired coordinates
+   * 
    * @return distance needed to travel to a waypoint.
    */
   private static double calculateDistance(Odometer odo, int waypointX, int waypointY) {
@@ -79,6 +76,7 @@ public class RobotDriver {
 
   /**
    * This calculates the angle needed to travel to a waypoint based on the current position stored in the odometer
+   * 
    * @param odo the odometer
    * @param waypointX x-coordinate of the robot
    * @param waypointY y-coordinate of the robot
@@ -125,64 +123,58 @@ public class RobotDriver {
     leftMotor.rotate(convertDistance(calculateDistance(odometer, X, Y)), true);
     rightMotor.rotate(convertDistance(calculateDistance(odometer, X, Y)), false);
   }
-  
+
   /**
-   * scans the field in a clockwise fashion
-   * the first low in distance reading AFTER HIGH READING should be when theta = 180
-   * the second low in distance should be when theta = 270
+   * scans the field in a clockwise fashion the first low in distance reading AFTER HIGH READING should be when theta =
+   * 180 the second low in distance should be when theta = 270
    */
   private static void scanField() {
-	  setSpeed(100);
-	  leftMotor.rotate(convertAngle(360.0), true);
-      rightMotor.rotate(-convertAngle(360.0), false); 
+    setSpeed(100);
+    leftMotor.rotate(convertAngle(360.0), true);
+    rightMotor.rotate(-convertAngle(360.0), false);
   }
-  
+
   /**
-   * using the color sensor (and assuming that the robot is facing the positive y general direction),
-   * this function tells the robot to march forward until it is on the (x,1) line, then rotate clock-wise
-   * until the color sensor aligns with the black line, at which moment the robot would have a theta value of 90
+   * using the color sensor (and assuming that the robot is facing the positive y general direction), this function
+   * tells the robot to march forward until it is on the (x,1) line, then rotate clock-wise until the color sensor
+   * aligns with the black line, at which moment the robot would have a theta value of 90
    */
   void seekAndAlign(OdometryCorrection oc) {
-	  setSpeed(120);
-	  if (oc.currentState == WorkingState.SEEK_Y) {
-		  leftMotor.backward();
-		  rightMotor.backward();
+    setSpeed(120);
+    if (oc.currentState == WorkingState.SEEK_Y) {
+      leftMotor.backward();
+      rightMotor.backward();
 
-	  }
-	  else if (oc.currentState == WorkingState.ALIGN_X) {
-		  stopTheRobot();
-		  leftMotor.rotate(convertDistance(-OdometryCorrection.SENSOR_CENTER_CORRECTION), true);
-		  rightMotor.rotate(convertDistance(-OdometryCorrection.SENSOR_CENTER_CORRECTION), false);
-		  leftMotor.backward();
-		  rightMotor.forward();
-	  }
-	  else if (oc.currentState == WorkingState.CROSS_Y) {
-		  stopTheRobot();
-		  leftMotor.rotate(convertAngle(90.0), true);
-		  rightMotor.rotate(convertAngle(-90.0), false);
-		  leftMotor.forward();
-		  rightMotor.forward();		  
-	  }
-	  else if (oc.currentState == WorkingState.SEEK_X) {
-		  stopTheRobot();
-		  leftMotor.rotate(convertDistance(5.0), true);
-		  rightMotor.rotate(convertDistance(5.0), false);
-		  leftMotor.rotate(convertAngle(90.0), true);
-		  rightMotor.rotate(convertAngle(-90.0), false);
-		  leftMotor.backward();
-		  rightMotor.backward();		  
-	  }
-	  else if (oc.currentState == WorkingState.ALIGN_Y) {
-		  stopTheRobot();
-		  leftMotor.rotate(-convertDistance(OdometryCorrection.SENSOR_CENTER_CORRECTION), true);
-		  rightMotor.rotate(-convertDistance(OdometryCorrection.SENSOR_CENTER_CORRECTION), false);
-		  leftMotor.rotate(convertAngle(90.0), true);
-		  rightMotor.rotate(convertAngle(-90.0), false);
-		  leftMotor.rotate(convertDistance(5.0+OdometryCorrection.SENSOR_CENTER_CORRECTION), true);
-		  rightMotor.rotate(convertDistance(5.0+OdometryCorrection.SENSOR_CENTER_CORRECTION), false);
-	  }
-	  else if (oc.currentState == WorkingState.FINISHED) {
-		  stopTheRobot();
-	  }
+    } else if (oc.currentState == WorkingState.ALIGN_X) {
+      stopTheRobot();
+      leftMotor.rotate(convertDistance(-OdometryCorrection.SENSOR_CENTER_CORRECTION), true);
+      rightMotor.rotate(convertDistance(-OdometryCorrection.SENSOR_CENTER_CORRECTION), false);
+      leftMotor.backward();
+      rightMotor.forward();
+    } else if (oc.currentState == WorkingState.CROSS_Y) {
+      stopTheRobot();
+      leftMotor.rotate(convertAngle(90.0), true);
+      rightMotor.rotate(convertAngle(-90.0), false);
+      leftMotor.forward();
+      rightMotor.forward();
+    } else if (oc.currentState == WorkingState.SEEK_X) {
+      stopTheRobot();
+      leftMotor.rotate(convertDistance(5.0), true);
+      rightMotor.rotate(convertDistance(5.0), false);
+      leftMotor.rotate(convertAngle(90.0), true);
+      rightMotor.rotate(convertAngle(-90.0), false);
+      leftMotor.backward();
+      rightMotor.backward();
+    } else if (oc.currentState == WorkingState.ALIGN_Y) {
+      stopTheRobot();
+      leftMotor.rotate(-convertDistance(OdometryCorrection.SENSOR_CENTER_CORRECTION), true);
+      rightMotor.rotate(-convertDistance(OdometryCorrection.SENSOR_CENTER_CORRECTION), false);
+      leftMotor.rotate(convertAngle(90.0), true);
+      rightMotor.rotate(convertAngle(-90.0), false);
+      leftMotor.rotate(convertDistance(5.0 + OdometryCorrection.SENSOR_CENTER_CORRECTION), true);
+      rightMotor.rotate(convertDistance(5.0 + OdometryCorrection.SENSOR_CENTER_CORRECTION), false);
+    } else if (oc.currentState == WorkingState.FINISHED) {
+      stopTheRobot();
+    }
   }
 }

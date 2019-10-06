@@ -3,7 +3,6 @@ package ca.mcgill.ecse211.lab4;
 import static ca.mcgill.ecse211.lab4.Resources.LCD;
 import static ca.mcgill.ecse211.lab4.Resources.usPoller;
 import static ca.mcgill.ecse211.lab4.Resources.alignmentDriver;
-import java.text.DecimalFormat;
 
 
 public class AlignmentDriverDisplay implements Runnable {

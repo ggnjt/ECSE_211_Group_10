@@ -16,7 +16,7 @@ public class UltrasonicPoller implements Runnable {
   private int distance;
   private float[] usData;
   private static final short BUFFER_SIZE = 21;
-  private int [] filterBuffer;
+  private int [] filterBuffer = new int [BUFFER_SIZE];
   public UltrasonicPoller() {
     usData = new float[US_SENSOR.sampleSize()];
   }

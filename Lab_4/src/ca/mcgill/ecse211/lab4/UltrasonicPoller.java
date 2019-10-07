@@ -15,14 +15,9 @@ import java.util.Arrays;
 public class UltrasonicPoller implements Runnable {
   private int distance;
   private float[] usData;
-<<<<<<< HEAD
   private static final short BUFFER_SIZE = 21;
   private int [] filterBuffer = new int [BUFFER_SIZE];
-=======
-  private static final short BUFFER_SIZE = 41;
-  private int[] filterBuffer = new int[BUFFER_SIZE];
 
->>>>>>> 152607a530b3f729ed2852e2dc3ba63ef56f32f5
   public UltrasonicPoller() {
     usData = new float[US_SENSOR.sampleSize()];
   }

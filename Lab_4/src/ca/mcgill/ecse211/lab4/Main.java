@@ -7,6 +7,7 @@ public class Main {
 
   public static void main(String[] args) {
     // first part
+
     new Thread(usPoller).start();
     new Thread(alignmentDriver).start();
     new Thread(new AlignmentDriverDisplay()).start();

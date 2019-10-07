@@ -29,6 +29,7 @@ public class Main {
     new Thread(odometer).start();
     new Thread(display).start();
     new Thread(oc).start();
+    new Thread(colorReader).start();
     while (Button.waitForAnyPress() != Button.ID_ESCAPE) {
     }
   }

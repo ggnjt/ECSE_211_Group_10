@@ -77,6 +77,11 @@ public class Resources {
   public static final int FILTER_OUT = 23;
 
   /**
+   * The color reader
+   */
+  public static ColorReader colorReader = new ColorReader();
+  
+  /**
    * US sensor
    */
   public static final EV3UltrasonicSensor US_SENSOR = new EV3UltrasonicSensor(SensorPort.S2);

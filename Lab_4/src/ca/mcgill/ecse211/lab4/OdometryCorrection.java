@@ -10,12 +10,12 @@ public class OdometryCorrection implements Runnable {
   // states
 
   enum WorkingState {
-    // state seeking y=1 black line with unknown theta
+    // Turn back to our position
+    TURN_BACK,
+    // back up until you see a line state seeking y=1 black line with unknown theta
     SEEK_Y,
     // state aligning to line y=1 (theta = 90) with unknow x
     ALIGN_X,
-    // state of first crossing the y=1 line after aligning with the y=1 line
-    CROSS_Y,
     // state turning to theta = 180, marching forward, turning to theta = 270 backing up until x=1 line
     SEEK_X,
     // turn until x=1 line is met, travel to (1,1) way point with odometer
@@ -120,4 +120,11 @@ public class OdometryCorrection implements Runnable {
     // return derivative < -0.03;
   }
 
+  /**
+   * Stop the robot
+   */
+  private static void stopTheRobot() {
+    leftMotor.stop(true);
+    rightMotor.stop(false);
+  }
 }

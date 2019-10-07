@@ -6,9 +6,11 @@ import lejos.robotics.SampleProvider;
 
 public class OdometryCorrection implements Runnable {
   private static final long CORRECTION_PERIOD = 10;
-  static final double SENSOR_CENTER_CORRECTION = 12.2; // distance form the sensor to the center of the vehicle (cm)
+  
+  //distance form the sensor to the center of the vehicle (cm)
+  static final double SENSOR_CENTER_CORRECTION = 12.2; 
+  
   // states
-
   enum WorkingState {
     // Turn back to our position
     TURN_BACK,
@@ -23,8 +25,9 @@ public class OdometryCorrection implements Runnable {
     // finish
     FINISHED;
   };
-
+  
   WorkingState currentState = WorkingState.SEEK_Y;
+  
   // sensor
   private SampleProvider sampleProvider = colorSensor.getRedMode();
   private float[] sampleColor = new float[colorSensor.sampleSize()];
@@ -127,4 +130,26 @@ public class OdometryCorrection implements Runnable {
     leftMotor.stop(true);
     rightMotor.stop(false);
   }
+  
+  /**
+   * Converts input distance to the total rotation of each wheel needed to cover that distance.
+   * 
+   * @param distance
+   * @return the wheel rotations necessary to cover the distance
+   */
+  private static int convertDistance(double distance) { // always positive
+    return (int) ((180.0 * distance) / (Math.PI * WHEEL_RAD));
+  }
+
+  /**
+   * Converts input angle to the total rotation of each wheel needed to rotate the robot by that angle.
+   * 
+   * @param angle angle in degrees
+   * @return the wheel rotations necessary to rotate the robot by the angle
+   */
+  private static int convertAngle(double angle) { // can be negative
+    return convertDistance(Math.PI * TRACK * angle / 360.0);
+  }
+
+
 }

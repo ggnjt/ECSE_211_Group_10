@@ -12,51 +12,7 @@ import ca.mcgill.ecse211.lab4.OdometryCorrection.WorkingState;
  * This class is used to drive the robot on the demo floor.
  */
 public class RobotDriver {
-  /**
-   * Stop the robot
-   */
-  private static void stopTheRobot() {
-    leftMotor.stop(true);
-    rightMotor.stop(false);
-  }
-
-  /**
-   * set acceleration for both motors
-   */
-  private static void setAcceleration(int acceleration) {
-    leftMotor.setAcceleration(acceleration);
-    rightMotor.setAcceleration(acceleration);
-  }
-
-  /**
-   * set Speed
-   */
-  private static void setSpeed(int speed) {
-    leftMotor.setSpeed(speed);
-    rightMotor.setSpeed(speed);
-  }
-
-  /**
-   * Converts input distance to the total rotation of each wheel needed to cover that distance.
-   * 
-   * @param distance
-   * @return the wheel rotations necessary to cover the distance
-   */
-  private static int convertDistance(double distance) { // always positive
-    return (int) ((180.0 * distance) / (Math.PI * WHEEL_RAD));
-  }
-
-  /**
-   * Converts input angle to the total rotation of each wheel needed to rotate the robot by that angle.
-   * 
-   * @param angle angle in degrees
-   * @return the wheel rotations necessary to rotate the robot by the angle
-   */
-  private static int convertAngle(double angle) { // can be negative
-    return convertDistance(Math.PI * TRACK * angle / 360.0);
-  }
-
-  /**
+    /**
    * calculates the displacement needed to move the the desired coordinates
    * 
    * @return distance needed to travel to a waypoint.

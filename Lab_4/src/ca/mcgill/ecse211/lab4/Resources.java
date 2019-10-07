@@ -75,11 +75,6 @@ public class Resources {
   public static Odometer odometer = Odometer.getOdometer();
 
   public static final int FILTER_OUT = 23;
-
-  /**
-   * The color reader
-   */
-  public static ColorReader colorReader = new ColorReader();
   
   /**
    * US sensor
@@ -105,11 +100,6 @@ public class Resources {
    * Display
    */
   public static final Display display = new Display();
-  
-  /**
-   * Robot Driver
-   */
-  public static final RobotDriver robotDriver = new RobotDriver();
   
   /**
    * Odometer correction

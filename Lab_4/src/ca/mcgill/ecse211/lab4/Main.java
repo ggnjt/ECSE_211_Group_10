@@ -9,7 +9,7 @@ public class Main {
     secondPhase();
     System.exit(0);
   }
-  
+
   @SuppressWarnings("deprecation")
   public static void firstPhase() {
     Thread a = new Thread(usPoller);
@@ -18,18 +18,25 @@ public class Main {
     a.start();
     b.start();
     c.start();
-    
+
     Button.waitForAnyPress();
     a.stop();
     b.stop();
     c.stop();
   }
-  
+
   public static void secondPhase() {
+    LCD.clear();
+    LCD.drawString("left: falling edge", 0, 0);
+    LCD.drawString("right: rising edge", 0, 1);
+    int res = Button.waitForAnyPress();
+    LCD.clear();
+
+    // start the party
     new Thread(odometer).start();
     new Thread(display).start();
     new Thread(oc).start();
-    new Thread(colorReader).start();
+    new Thread(new ColorReader(res == Button.ID_LEFT)).start();
     while (Button.waitForAnyPress() != Button.ID_ESCAPE) {
     }
   }

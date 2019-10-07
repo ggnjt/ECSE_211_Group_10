@@ -1,15 +1,17 @@
 package ca.mcgill.ecse211.lab4;
 
 import static ca.mcgill.ecse211.lab4.Resources.*;
+import com.sun.corba.se.spi.orbutil.fsm.State;
+import ca.mcgill.ecse211.lab4.OdometryCorrection.WorkingState;
 import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 
 public class OdometryCorrection implements Runnable {
   private static final long CORRECTION_PERIOD = 10;
-  
-  //distance form the sensor to the center of the vehicle (cm)
-  static final double SENSOR_CENTER_CORRECTION = 12.2; 
-  
+
+  // distance form the sensor to the center of the vehicle (cm)
+  static final double SENSOR_CENTER_CORRECTION = 12.2;
+
   // states
   enum WorkingState {
     // Turn back to our position
@@ -25,9 +27,9 @@ public class OdometryCorrection implements Runnable {
     // finish
     FINISHED;
   };
-  
+
   WorkingState currentState = WorkingState.SEEK_Y;
-  
+
   // sensor
   private SampleProvider sampleProvider = colorSensor.getRedMode();
   private float[] sampleColor = new float[colorSensor.sampleSize()];
@@ -45,13 +47,22 @@ public class OdometryCorrection implements Runnable {
       sampleProvider.fetchSample(sampleColor, 0);
       prev = sampleColor[0];
       switch (currentState) {
+        case TURN_BACK:
+          setSpeed(ROTATE_SPEED);
+          leftMotor.rotate(convertAngle(180.0), true);
+          rightMotor.rotate(convertAngle(-180.0), false);
+          stopTheRobot();
+          leftMotor.backward();
+          rightMotor.backward();
+          currentState = WorkingState.SEEK_Y;
+          break;
         case SEEK_Y:
           // at the start, the robot point roughly at the horizontal wall, and backs onto the y=1 line
           if (detectBlackLine()) {
             Sound.beep();
             odometer.setY(TILE_SIZE - SENSOR_CENTER_CORRECTION);
             currentState = WorkingState.ALIGN_X;
-            robotDriver.seekAndAlign(this);
+            seekAndAlign();
             Main.sleepFor(700); // sleeps the thread to avoid reading the same black line more than once
             break;
           }
@@ -61,7 +72,7 @@ public class OdometryCorrection implements Runnable {
             Sound.beep();
             odometer.setTheta(90.0);
             currentState = WorkingState.CROSS_Y;
-            robotDriver.seekAndAlign(this);
+            seekAndAlign();
             Main.sleepFor(700);
             break;
           }
@@ -71,7 +82,7 @@ public class OdometryCorrection implements Runnable {
             Sound.beep();
             odometer.setY(TILE_SIZE - SENSOR_CENTER_CORRECTION);
             currentState = WorkingState.SEEK_X;
-            robotDriver.seekAndAlign(this);
+            seekAndAlign(this);
             Main.sleepFor(700); // sleeps the thread to avoid reading the same black line more than once
             break;
           }
@@ -82,7 +93,7 @@ public class OdometryCorrection implements Runnable {
             Sound.beep();
             odometer.setX(TILE_SIZE - SENSOR_CENTER_CORRECTION);
             currentState = WorkingState.ALIGN_Y;
-            robotDriver.seekAndAlign(this);
+            seekAndAlign();
             Main.sleepFor(700);
             break;
           }
@@ -93,14 +104,14 @@ public class OdometryCorrection implements Runnable {
           if (detectBlackLine()) {
             Sound.beep();
             odometer.setX(TILE_SIZE - SENSOR_CENTER_CORRECTION);
-            robotDriver.seekAndAlign(this);
+            seekAndAlign();
             currentState = WorkingState.FINISHED;
             Main.sleepFor(700);
             break;
           }
         case FINISHED:
-          // final statge, robot is stopped at (1,1), and the coordinates are reset
-          robotDriver.seekAndAlign(this);
+          // final stage, robot is stopped at (1,1), and the coordinates are reset
+          seekAndAlign();
           odometer.setXYT(TILE_SIZE, TILE_SIZE, 0.0);
           break;
       }
@@ -130,7 +141,7 @@ public class OdometryCorrection implements Runnable {
     leftMotor.stop(true);
     rightMotor.stop(false);
   }
-  
+
   /**
    * Converts input distance to the total rotation of each wheel needed to cover that distance.
    * 
@@ -149,6 +160,138 @@ public class OdometryCorrection implements Runnable {
    */
   private static int convertAngle(double angle) { // can be negative
     return convertDistance(Math.PI * TRACK * angle / 360.0);
+  }
+
+  /**
+   * calculates the displacement needed to move the the desired coordinates
+   * 
+   * @return distance needed to travel to a waypoint.
+   */
+  private static double calculateDistance(Odometer odo, int waypointX, int waypointY) {
+
+    double currentX = odo.getXYT()[0];
+    double currentY = odo.getXYT()[1];
+    double Xtarget = waypointX * TILE_SIZE;
+    double Ytarget = waypointY * TILE_SIZE;
+
+    double X2go = Xtarget - currentX;
+    double Y2go = Ytarget - currentY;
+
+    return Math.sqrt(Math.pow(X2go, 2) + Math.pow(Y2go, 2));
+  }
+
+  /**
+   * This calculates the angle needed to travel to a waypoint based on the current position stored in the odometer
+   * 
+   * @param odo the odometer
+   * @param waypointX x-coordinate of the robot
+   * @param waypointY y-coordinate of the robot
+   * @return the minimum angle rotation needed to point to the waypoint
+   */
+  private static double calculateAngle(Odometer odo, int waypointX, int waypointY) {
+
+    double currentX = odo.getXYT()[0];
+    double currentY = odo.getXYT()[1];
+    double currentTheta = odo.getXYT()[2];
+    double Xtarget = waypointX * TILE_SIZE;
+    double Ytarget = waypointY * TILE_SIZE;
+
+    double X2go = Xtarget - currentX;
+    double Y2go = Ytarget - currentY;
+
+    double angleTarget = Math.atan(X2go / Y2go) / Math.PI * 180;
+    if (Y2go < 0) {
+      angleTarget += 180;
+    }
+    double angleDeviation = angleTarget - currentTheta;
+
+    if (Math.abs(angleDeviation) < 180)
+      return angleDeviation;
+    else if (angleDeviation > 180) {
+      return angleDeviation - 360;
+    } else {
+      return angleDeviation + 360;
+    }
+  }
+
+
+  private static int getAngleRotation(Odometer odo, int X, int Y) {
+    return convertAngle(calculateAngle(odo, X, Y));
+  }
+
+  // This is a blocking Turn (blocks other threads)
+  private static void turnTo(int X, int Y) {
+    leftMotor.rotate(getAngleRotation(odometer, X, Y), true);
+    rightMotor.rotate(-getAngleRotation(odometer, X, Y), false);
+  }
+
+  // This is a blocking GoTo (blocks other threads)
+  private static void goTo(int X, int Y) {
+    leftMotor.rotate(convertDistance(calculateDistance(odometer, X, Y)), true);
+    rightMotor.rotate(convertDistance(calculateDistance(odometer, X, Y)), false);
+  }
+
+  /**
+   * scans the field in a clockwise fashion the first low in distance reading AFTER HIGH READING should be when theta =
+   * 180 the second low in distance should be when theta = 270
+   */
+  private static void scanField() {
+    setSpeed(100);
+    leftMotor.rotate(convertAngle(360.0), true);
+    rightMotor.rotate(-convertAngle(360.0), false);
+  }
+
+  /**
+   * set Speed
+   */
+  private static void setSpeed(int speed) {
+    leftMotor.setSpeed(speed);
+    rightMotor.setSpeed(speed);
+  }
+
+  /**
+   * using the color sensor (and assuming that the robot is facing the positive y general direction), this function
+   * tells the robot to march forward until it is on the (x,1) line, then rotate clock-wise until the color sensor
+   * aligns with the black line, at which moment the robot would have a theta value of 90
+   */
+  void seekAndAlign() {
+    oc = this;
+    setSpeed(120);
+    if (oc.currentState == WorkingState.SEEK_Y) {
+      leftMotor.backward();
+      rightMotor.backward();
+
+    } else if (oc.currentState == WorkingState.ALIGN_X) {
+      stopTheRobot();
+      leftMotor.rotate(convertDistance(-OdometryCorrection.SENSOR_CENTER_CORRECTION), true);
+      rightMotor.rotate(convertDistance(-OdometryCorrection.SENSOR_CENTER_CORRECTION), false);
+      leftMotor.backward();
+      rightMotor.forward();
+    } else if (oc.currentState == WorkingState.CROSS_Y) {
+      stopTheRobot();
+      leftMotor.rotate(convertAngle(90.0), true);
+      rightMotor.rotate(convertAngle(-90.0), false);
+      leftMotor.forward();
+      rightMotor.forward();
+    } else if (oc.currentState == WorkingState.SEEK_X) {
+      stopTheRobot();
+      leftMotor.rotate(convertDistance(5.0), true);
+      rightMotor.rotate(convertDistance(5.0), false);
+      leftMotor.rotate(convertAngle(90.0), true);
+      rightMotor.rotate(convertAngle(-90.0), false);
+      leftMotor.backward();
+      rightMotor.backward();
+    } else if (oc.currentState == WorkingState.ALIGN_Y) {
+      stopTheRobot();
+      leftMotor.rotate(-convertDistance(OdometryCorrection.SENSOR_CENTER_CORRECTION), true);
+      rightMotor.rotate(-convertDistance(OdometryCorrection.SENSOR_CENTER_CORRECTION), false);
+      leftMotor.rotate(convertAngle(90.0), true);
+      rightMotor.rotate(convertAngle(-90.0), false);
+      leftMotor.rotate(convertDistance(5.0 + OdometryCorrection.SENSOR_CENTER_CORRECTION), true);
+      rightMotor.rotate(convertDistance(5.0 + OdometryCorrection.SENSOR_CENTER_CORRECTION), false);
+    } else if (oc.currentState == WorkingState.FINISHED) {
+      stopTheRobot();
+    }
   }
 
 

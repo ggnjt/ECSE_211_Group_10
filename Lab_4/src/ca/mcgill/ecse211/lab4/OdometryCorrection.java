@@ -28,7 +28,7 @@ public class OdometryCorrection implements Runnable {
     FINISHED;
   };
 
-  WorkingState currentState = WorkingState.SEEK_Y;
+  WorkingState currentState = WorkingState.TURN_BACK;
 
   // sensor
   private SampleProvider sampleProvider = colorSensor.getRedMode();
@@ -41,7 +41,6 @@ public class OdometryCorrection implements Runnable {
    */
   public void run() {
     long correctionStart, correctionEnd;
-    currentState = WorkingState.SEEK_Y;
     while (true) {
       correctionStart = System.currentTimeMillis();
       sampleProvider.fetchSample(sampleColor, 0);
@@ -57,33 +56,40 @@ public class OdometryCorrection implements Runnable {
           currentState = WorkingState.SEEK_Y;
           break;
         case SEEK_Y:
-          // at the start, the robot point roughly at the horizontal wall, and backs onto the y=1 line
-          if (detectBlackLine()) {
+          if (ColorReader.detectBlackLine()) {
+            stopTheRobot();
             Sound.beep();
             odometer.setY(TILE_SIZE - SENSOR_CENTER_CORRECTION);
             currentState = WorkingState.ALIGN_X;
-            seekAndAlign();
-            Main.sleepFor(700); // sleeps the thread to avoid reading the same black line more than once
+            leftMotor.rotate(convertDistance(-OdometryCorrection.SENSOR_CENTER_CORRECTION), true);
+            rightMotor.rotate(convertDistance(-OdometryCorrection.SENSOR_CENTER_CORRECTION), false);
+            leftMotor.backward();
+            rightMotor.forward();
+            try {
+              Thread.sleep(700);
+            } catch (InterruptedException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            } // sleeps the thread to avoid reading the same black line more than once
             break;
           }
         case ALIGN_X:
           // seconds stage, the robot will turn counter clockwise until the sensor is directly on the y=1 line
           if (detectBlackLine()) {
+            stopTheRobot();
             Sound.beep();
             odometer.setTheta(90.0);
-            currentState = WorkingState.CROSS_Y;
-            seekAndAlign();
-            Main.sleepFor(700);
-            break;
-          }
-        case CROSS_Y:
-          // third stage, the robot moves in the -y direction until the sensor meets the line again
-          if (detectBlackLine()) {
-            Sound.beep();
-            odometer.setY(TILE_SIZE - SENSOR_CENTER_CORRECTION);
+            leftMotor.rotate(convertAngle(-90.0), true);
+            rightMotor.rotate(convertAngle(90.0), false);
+            leftMotor.rotate(-3, true);
+            rightMotor.rotate(-3, false);
             currentState = WorkingState.SEEK_X;
-            seekAndAlign(this);
-            Main.sleepFor(700); // sleeps the thread to avoid reading the same black line more than once
+            try {
+              Thread.sleep(700);
+            } catch (InterruptedException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
             break;
           }
         case SEEK_X:
@@ -255,25 +261,9 @@ public class OdometryCorrection implements Runnable {
    * aligns with the black line, at which moment the robot would have a theta value of 90
    */
   void seekAndAlign() {
-    oc = this;
     setSpeed(120);
-    if (oc.currentState == WorkingState.SEEK_Y) {
-      leftMotor.backward();
-      rightMotor.backward();
-
-    } else if (oc.currentState == WorkingState.ALIGN_X) {
-      stopTheRobot();
-      leftMotor.rotate(convertDistance(-OdometryCorrection.SENSOR_CENTER_CORRECTION), true);
-      rightMotor.rotate(convertDistance(-OdometryCorrection.SENSOR_CENTER_CORRECTION), false);
-      leftMotor.backward();
-      rightMotor.forward();
-    } else if (oc.currentState == WorkingState.CROSS_Y) {
-      stopTheRobot();
-      leftMotor.rotate(convertAngle(90.0), true);
-      rightMotor.rotate(convertAngle(-90.0), false);
-      leftMotor.forward();
-      rightMotor.forward();
-    } else if (oc.currentState == WorkingState.SEEK_X) {
+   
+   if (currentState == WorkingState.SEEK_X) {
       stopTheRobot();
       leftMotor.rotate(convertDistance(5.0), true);
       rightMotor.rotate(convertDistance(5.0), false);
@@ -281,7 +271,7 @@ public class OdometryCorrection implements Runnable {
       rightMotor.rotate(convertAngle(-90.0), false);
       leftMotor.backward();
       rightMotor.backward();
-    } else if (oc.currentState == WorkingState.ALIGN_Y) {
+    } else if (currentState == WorkingState.ALIGN_Y) {
       stopTheRobot();
       leftMotor.rotate(-convertDistance(OdometryCorrection.SENSOR_CENTER_CORRECTION), true);
       rightMotor.rotate(-convertDistance(OdometryCorrection.SENSOR_CENTER_CORRECTION), false);
@@ -289,7 +279,7 @@ public class OdometryCorrection implements Runnable {
       rightMotor.rotate(convertAngle(-90.0), false);
       leftMotor.rotate(convertDistance(5.0 + OdometryCorrection.SENSOR_CENTER_CORRECTION), true);
       rightMotor.rotate(convertDistance(5.0 + OdometryCorrection.SENSOR_CENTER_CORRECTION), false);
-    } else if (oc.currentState == WorkingState.FINISHED) {
+    } else if (currentState == WorkingState.FINISHED) {
       stopTheRobot();
     }
   }

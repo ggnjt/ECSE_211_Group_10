@@ -5,7 +5,7 @@ import lejos.hardware.Button;
 
 public class Main {
   public static void main(String[] args) {
-    firstPhase();
+    //firstPhase();
     secondPhase();
     System.exit(0);
   }

@@ -29,6 +29,7 @@ public class Display implements Runnable {
       LCD.drawString("T: " + numberFormat.format(position[2]), 0, 2);
 
       LCD.drawString(oc.currentState.toString(), 0, 3);
+      LCD.drawString(ColorReader.getSample() + "", 0, 4);
 
       updateEnd = System.currentTimeMillis();
       if (updateEnd - updateStart < DISPLAY_PERIOD) {

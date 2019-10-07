@@ -5,17 +5,17 @@ import lejos.robotics.SampleProvider;
 
 public class ColorReader implements Runnable {
 
-	private boolean isFalling;
+	private static boolean isFalling;
 	private static final long SENSORTIMERLIMIT = 50;
 	
-	public ColorReader(boolean isFalling) {
-		this.isFalling = isFalling;
+	public ColorReader(boolean fal) {
+		isFalling = fal;
 	}
 
 	// sensor
-	private SampleProvider sampleProvider = colorSensor.getRedMode();
-	private float[] sampleColor = new float[colorSensor.sampleSize()];
-	private float sample;
+	private static SampleProvider sampleProvider = colorSensor.getRedMode();
+	private static float[] sampleColor = new float[colorSensor.sampleSize()];
+	private static float sample;
 	private static float der = 0;
 	private static float prev = 0;
 	private static int counter = 0;
@@ -34,15 +34,15 @@ public class ColorReader implements Runnable {
 		}
 	}
 
-	public float getSample() {
+	public static float getSample() {
 		return sample;
 	}
 	
-	public boolean detectBlackLine() {
+	public static boolean detectBlackLine() {
 		der = sample - prev;
 		prev = sample;
 		if (isFalling) {
-			if (der < 0 && counter < 2) {
+			if (der < 0 && counter < 3) {
 				counter++;
 				return false;
 			} else if (der < 0) {
@@ -55,7 +55,7 @@ public class ColorReader implements Runnable {
 			}
 		}
 		else {
-			if (der > 0 && counter < 2) {
+			if (der > 0 && counter < 3) {
 				counter++;
 				return false;
 			} else if (der < 0) {

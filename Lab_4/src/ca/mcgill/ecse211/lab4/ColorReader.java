@@ -22,15 +22,23 @@ public class ColorReader implements Runnable {
 
 	public void run() {
 		long readingStart, readingEnd;
-		readingStart = System.currentTimeMillis();
 
-		sampleProvider.fetchSample(sampleColor, 0);
-		sample = sampleColor[0];
-
-		// this ensures reading
-		readingEnd = System.currentTimeMillis();
-		if (readingEnd - readingStart < SENSORTIMERLIMIT) {
-			Main.sleepFor(SENSORTIMERLIMIT - (readingEnd - readingStart));
+		while(true) {
+			readingStart = System.currentTimeMillis();
+			sampleProvider.fetchSample(sampleColor, 0);
+			sample = sampleColor[0];
+			der = sample - prev;
+			prev = sample;
+			// this ensures reading
+			readingEnd = System.currentTimeMillis();
+			if (readingEnd - readingStart < SENSORTIMERLIMIT) {
+				try {
+					Thread.sleep(SENSORTIMERLIMIT - (readingEnd - readingStart));
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}	
 		}
 	}
 
@@ -39,33 +47,27 @@ public class ColorReader implements Runnable {
 	}
 	
 	public static boolean detectBlackLine() {
-		der = sample - prev;
-		prev = sample;
 		if (isFalling) {
-			if (der < 0 && counter < 3) {
-				counter++;
-				return false;
-			} else if (der < 0) {
+			if (counter > 3) {
 				counter = 0;
 				return true;
 			}
-			else {
-				counter = 0;
+			else if (der < 0 && Math.abs(der) > 0.07) {
+				counter++;
 				return false;
-			}
+			} 
+			else return false;
 		}
 		else {
-			if (der > 0 && counter < 3) {
-				counter++;
-				return false;
-			} else if (der < 0) {
+			if (counter > 3) {
 				counter = 0;
 				return true;
 			}
-			else {
-				counter = 0;
+			else if (der > 0 && Math.abs(der) > 0.07) {
+				counter++;
 				return false;
-			}
+			} 
+			else return false;
 		}
 	}
 }

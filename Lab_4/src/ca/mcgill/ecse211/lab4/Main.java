@@ -35,6 +35,7 @@ public class Main {
     // start the party
     new Thread(odometer).start();
     new Thread(display).start();
+    
     new Thread(oc).start();
     new Thread(new ColorReader(res == Button.ID_LEFT)).start();
     while (Button.waitForAnyPress() != Button.ID_ESCAPE) {

@@ -1,13 +1,8 @@
 package ca.mcgill.ecse211.lab4;
 
 import static ca.mcgill.ecse211.lab4.Resources.*;
-import java.util.Arrays;
-
-import ca.mcgill.ecse211.lab4.OdometryCorrection.WorkingState;
 import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
-
-
 
 public class OdometryCorrection implements Runnable {
   private static final long CORRECTION_PERIOD = 10;
@@ -42,8 +37,6 @@ public class OdometryCorrection implements Runnable {
   public void run() {
     long correctionStart, correctionEnd;
     currentState = WorkingState.SEEK_Y;
-    leftMotor.forward();
-    rightMotor.forward();
     while (true) {
       correctionStart = System.currentTimeMillis();
       sampleProvider.fetchSample(sampleColor, 0);

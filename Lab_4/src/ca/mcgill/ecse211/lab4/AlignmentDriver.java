@@ -1,4 +1,5 @@
 package ca.mcgill.ecse211.lab4;
+
 // static import to avoid duplicating variables and make the code easier to read
 import static ca.mcgill.ecse211.lab4.Resources.*;
 
@@ -146,8 +147,8 @@ public class AlignmentDriver implements Runnable {
 				e.printStackTrace();
 			}
 		}
-        leftMotor.rotate(convertAngle(180.0), true);
-        rightMotor.rotate(-convertAngle(180.0), false);
+		leftMotor.rotate(convertAngle(180.0), true);
+		rightMotor.rotate(-convertAngle(180.0), false);
 	}
 
 	private static int convertDistance(double distance) { // always positive

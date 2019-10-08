@@ -126,8 +126,8 @@ public class AlignmentDriver implements Runnable {
 					spaceCounter++;
 				} else {
 					state = SearchingState.FINISHED;
-					leftMotor.rotate(-360, true);
-					rightMotor.rotate(-360, false);
+					leftMotor.rotate(-convertDistance(10), true);
+					rightMotor.rotate(-convertDistance(10), false);
 					spaceCounter = 0;
 				}
 				break;

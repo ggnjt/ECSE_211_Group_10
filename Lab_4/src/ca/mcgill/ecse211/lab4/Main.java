@@ -5,7 +5,7 @@ import lejos.hardware.Button;
 
 public class Main {
   public static void main(String[] args) {
-    //firstPhase();
+    firstPhase();
     secondPhase();
     System.exit(0);
   }
@@ -14,18 +14,16 @@ public class Main {
   public static void firstPhase() {
     Thread a = new Thread(usPoller);
     Thread b = new Thread(alignmentDriver);
-    Thread c = new Thread(new AlignmentDriverDisplay());
+    Thread c = new Thread(alignmentDriverDisplay);
     a.start();
     b.start();
     c.start();
 
     Button.waitForAnyPress();
-    a.stop();
-    b.stop();
-    c.stop();
   }
 
   public static void secondPhase() {
+    alignmentDriverDisplay.kill = true;
     LCD.clear();
     LCD.drawString("left: falling edge", 0, 0);
     LCD.drawString("right: rising edge", 0, 1);

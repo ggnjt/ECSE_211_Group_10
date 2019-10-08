@@ -92,6 +92,10 @@ public class Resources {
   public static  final AlignmentDriver alignmentDriver = new AlignmentDriver();
    
   /**
+   * alignment driver display
+   */
+  public static final AlignmentDriverDisplay alignmentDriverDisplay = new AlignmentDriverDisplay();
+  /**
    * The color sensor.
    */
   public static final EV3ColorSensor colorSensor = new EV3ColorSensor(SensorPort.S1);

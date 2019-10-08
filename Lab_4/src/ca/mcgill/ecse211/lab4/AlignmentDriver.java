@@ -125,17 +125,13 @@ public class AlignmentDriver implements Runnable {
 				if (spaceCounter < 200) {
 					spaceCounter++;
 				} else {
+					leftMotor.rotate(convertDistance(-8.0), true);
+					rightMotor.rotate(convertDistance(-8.0), false);
 					state = SearchingState.FINISHED;
-					leftMotor.rotate(-360, true);
-					rightMotor.rotate(-360, false);
-					spaceCounter = 0;
 				}
 				break;
 			case FINISHED:
-				if (spaceCounter < 20) {
-					spaceCounter++;
-				} else
-					stopTheRobot();
+				stopTheRobot();
 				cont = false;
 				break;
 			}

@@ -17,7 +17,7 @@ public class UltrasonicPoller implements Runnable {
   private float[] usData;
   private static final short BUFFER_SIZE = 21;
   private int [] filterBuffer = new int [BUFFER_SIZE];
-
+  public static boolean kill = false;
   public UltrasonicPoller() {
     usData = new float[US_SENSOR.sampleSize()];
   }
@@ -32,6 +32,7 @@ public class UltrasonicPoller implements Runnable {
     int count = 0;
 
     while (true) {
+      if (kill) break;
       US_SENSOR.getDistanceMode().fetchSample(usData, 0); // acquire distance data in meters
       reading = (int) (usData[0] * 100.0); // extract from buffer, convert to cm, cast to int
 

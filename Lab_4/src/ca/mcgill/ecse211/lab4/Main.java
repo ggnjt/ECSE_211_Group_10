@@ -5,7 +5,7 @@ import lejos.hardware.Button;
 
 public class Main {
   public static void main(String[] args) {
-    //firstPhase();
+    firstPhase();
     secondPhase();
     System.exit(0);
   }
@@ -18,11 +18,10 @@ public class Main {
     a.start();
     b.start();
     c.start();
-
     Button.waitForAnyPress();
-    a.stop();
-    b.stop();
-    c.stop();
+    UltrasonicPoller.kill = true;
+    AlignmentDriverDisplay.kill = true;
+
   }
 
   public static void secondPhase() {

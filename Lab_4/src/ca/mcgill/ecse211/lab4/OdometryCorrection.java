@@ -21,8 +21,6 @@ public class OdometryCorrection implements Runnable {
 		// state turning to theta = 180, marching forward, turning to theta = 270
 		// backing up until x=1 line
 		SEEK_X,
-		// turn until x=1 line is met, travel to (1,1) way point with odometer
-		ALIGN_Y,
 		// finish
 		FINISHED;
 	};
@@ -81,8 +79,12 @@ public class OdometryCorrection implements Runnable {
 					odometer.setTheta(90.0);
 					leftMotor.rotate(convertAngle(-90.0), true);
 					rightMotor.rotate(convertAngle(90.0), false);
-					leftMotor.backward();
-					rightMotor.backward();
+					leftMotor.rotate(convertDistance(-5.0), true);
+					rightMotor.rotate(convertDistance(-5.0), false);
+					leftMotor.rotate(convertAngle(90.0), true);
+					rightMotor.rotate(convertAngle(-90.0), false);
+					leftMotor.forward();
+					rightMotor.forward();
 					currentState = WorkingState.SEEK_X;
 					try {
 						Thread.sleep(700);
@@ -98,10 +100,21 @@ public class OdometryCorrection implements Runnable {
 				// moves backwards until it detects a black line
 				if (detectBlackLine()) {
 					Sound.beep();
+					stopTheRobot();
 					odometer.setX(TILE_SIZE - SENSOR_CENTER_CORRECTION);
-					currentState = WorkingState.ALIGN_Y;
-					seekAndAlign();
-					Main.sleepFor(700);
+					leftMotor.rotate(-convertDistance(OdometryCorrection.SENSOR_CENTER_CORRECTION), true);
+					rightMotor.rotate(-convertDistance(OdometryCorrection.SENSOR_CENTER_CORRECTION), false);
+					leftMotor.rotate(convertAngle(-90.0), true);
+					rightMotor.rotate(convertAngle(90.0), false);
+					leftMotor.rotate(convertDistance(5.0), true);
+					rightMotor.rotate(convertDistance(5.0), false);
+					currentState = WorkingState.FINISHED;
+					try {
+						Thread.sleep(700);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 				break;
 				// 5th stage, the robot continues to move until the center is aligned with the
@@ -109,18 +122,9 @@ public class OdometryCorrection implements Runnable {
 				// towards
 				// the +y direction until the sensor detects the x=1 line, then moves forward to
 				// the (1,1) point
-			case ALIGN_Y:
-				if (detectBlackLine()) {
-					Sound.beep();
-					odometer.setX(TILE_SIZE - SENSOR_CENTER_CORRECTION);
-					seekAndAlign();
-					currentState = WorkingState.FINISHED;
-					Main.sleepFor(700);
-				}
-				break;
 			case FINISHED:
 				// final stage, robot is stopped at (1,1), and the coordinates are reset
-				seekAndAlign();
+				stopTheRobot();
 				odometer.setXYT(TILE_SIZE, TILE_SIZE, 0.0);
 				break;
 			}
@@ -267,28 +271,6 @@ public class OdometryCorrection implements Runnable {
 	 * is on the (x,1) line, then rotate clock-wise until the color sensor aligns
 	 * with the black line, at which moment the robot would have a theta value of 90
 	 */
-	void seekAndAlign() {
-		setSpeed(120);
 
-		if (currentState == WorkingState.SEEK_X) {
-			stopTheRobot();
-			leftMotor.rotate(convertDistance(5.0), true);
-			rightMotor.rotate(convertDistance(5.0), false);
-			leftMotor.rotate(convertAngle(90.0), true);
-			rightMotor.rotate(convertAngle(-90.0), false);
-			leftMotor.backward();
-			rightMotor.backward();
-		} else if (currentState == WorkingState.ALIGN_Y) {
-			stopTheRobot();
-			leftMotor.rotate(-convertDistance(OdometryCorrection.SENSOR_CENTER_CORRECTION), true);
-			rightMotor.rotate(-convertDistance(OdometryCorrection.SENSOR_CENTER_CORRECTION), false);
-			leftMotor.rotate(convertAngle(90.0), true);
-			rightMotor.rotate(convertAngle(-90.0), false);
-			leftMotor.rotate(convertDistance(5.0 + OdometryCorrection.SENSOR_CENTER_CORRECTION), true);
-			rightMotor.rotate(convertDistance(5.0 + OdometryCorrection.SENSOR_CENTER_CORRECTION), false);
-		} else if (currentState == WorkingState.FINISHED) {
-			stopTheRobot();
-		}
-	}
 
 }

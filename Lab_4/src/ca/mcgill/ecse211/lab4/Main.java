@@ -11,7 +11,7 @@ public class Main {
   }
 
   @SuppressWarnings("deprecation")
-  public static void firstPhase() {
+  public static void firstPhase() { //First phase when the robot uses the US sensor to align
     Thread a = new Thread(usPoller);
     Thread b = new Thread(alignmentDriver);
     Thread c = new Thread(new AlignmentDriverDisplay());
@@ -24,7 +24,7 @@ public class Main {
 
   }
 
-  public static void secondPhase() {
+  public static void secondPhase() { //Second phase where the robot uses the color sensor to align
     LCD.clear();
     LCD.drawString("left: falling edge", 0, 0);
     LCD.drawString("right: rising edge", 0, 1);

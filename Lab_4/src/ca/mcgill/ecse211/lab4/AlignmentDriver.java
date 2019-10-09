@@ -51,11 +51,12 @@ public class AlignmentDriver implements Runnable {
 	@Override
 	public void run() {
 		setSpeed(ROTATE_SPEED);
+		//start by rotating the robot counterclock wise
 		rotateCounterClockWiseNonBLocking();
-		int spaceCounter = 0;
-		int der = 0;
-		int prev = 500;
-		boolean cont = true;
+		int spaceCounter = 0; //buffer for counting derivative jumps
+		int der = 0; //used to store derivative
+		int prev = 500; //used to store the previous value
+		boolean cont = true; //boolean used to break our of while loop
 		while (cont) {
 			int reading = usPoller.getDistance();
 			if (reading == -1)
@@ -63,7 +64,8 @@ public class AlignmentDriver implements Runnable {
 
 			// logic
 			switch (state) {
-			case INIT:
+			case INIT: 
+			//initial stage, filling up the median filter and turning until the reading from US sensor becomes very large
 				if (reading > TILE_SIZE * 5.0) {
 					spaceCounter++;
 				} else
@@ -74,17 +76,19 @@ public class AlignmentDriver implements Runnable {
 				}
 				break;
 			case GAZING_THE_ABYSS:
+			//when the robot is facing away from the wall
 				if (reading < TILE_SIZE * 1.5) {
 					spaceCounter++;
 				} else
 					spaceCounter = 0;
 				if (spaceCounter > 2) {
 					state = SearchingState.XWALL;
-					setSpeed(15);
+					setSpeed(15); //slows the robot down to get better readings
 					spaceCounter = 0;
 				}
 				break;
 			case XWALL:
+			//when the robot is facing the x=0 wall
 				der = reading - prev;
 				prev = reading;
 				if (der > 0) {
@@ -95,7 +99,8 @@ public class AlignmentDriver implements Runnable {
 					prev = 500;
 					spaceCounter = 0;
 				}
-			case GAP:
+			case GAP: 
+			//corner between the two walls
 				der = reading - prev;
 				prev = reading;
 				if (der < 0) {
@@ -108,14 +113,17 @@ public class AlignmentDriver implements Runnable {
 				}
 				break;
 			case YWALL:
+			//when robot is facing the y=0 wall
 				der = reading - prev;
 				prev = reading;
 				if (der > 0 || spaceCounter > 75) {
 					state = SearchingState.FINISHING;
 					stopTheRobot();
-					setSpeed(80);
-					leftMotor.forward();
-					rightMotor.forward();
+					//===========================================
+					setSpeed(80);			//These steps are used
+					leftMotor.forward();	//to ensure alignment
+					rightMotor.forward();	//by ramming the wall
+					//===========================================
 					spaceCounter = 0;
 				} else if (der == 0) {
 					spaceCounter++;
@@ -126,7 +134,8 @@ public class AlignmentDriver implements Runnable {
 					spaceCounter++;
 				} else {
 					leftMotor.rotate(convertDistance(-8.0), true);
-					rightMotor.rotate(convertDistance(-8.0), false);
+					rightMotor.rotate(convertDistance(-8.0), false); 
+					//backing up from the wall
 					state = SearchingState.FINISHED;
 				}
 				break;
@@ -145,6 +154,7 @@ public class AlignmentDriver implements Runnable {
 		}
 		leftMotor.rotate(convertAngle(180.0), true);
 		rightMotor.rotate(-convertAngle(180.0), false);
+		//after the robot is settled, rotates 180 degrees to face the positive y direction
 	}
 
 	private static int convertDistance(double distance) { // always positive

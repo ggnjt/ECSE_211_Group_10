@@ -35,7 +35,8 @@ public class UltrasonicPoller implements Runnable {
       if (kill) break;
       US_SENSOR.getDistanceMode().fetchSample(usData, 0); // acquire distance data in meters
       reading = (int) (usData[0] * 100.0); // extract from buffer, convert to cm, cast to int
-
+      
+      //filling up the median filter and returning -1 as reading
       if (count < BUFFER_SIZE) {
         filterBuffer[count] = reading;
         distance = -1;
@@ -43,8 +44,8 @@ public class UltrasonicPoller implements Runnable {
       } else { // median filter
         shiftArray(filterBuffer, reading);
         int[] sample = filterBuffer.clone();
-        Arrays.sort(sample);
-        distance = sample[BUFFER_SIZE / 2];
+        Arrays.sort(sample); //cloning and sorting to preseve the buffer array
+        distance = sample[BUFFER_SIZE / 2]; //reading median value
       }
       try {
         Thread.sleep(50);
@@ -52,7 +53,8 @@ public class UltrasonicPoller implements Runnable {
       } // Poor man's timed sampling
     }
   }
-
+  
+  //shifting the array for the median filter
   void shiftArray(int[] arr, int newI) {
     int size = arr.length;
     for (int i = 0; i < size - 1; i++) {

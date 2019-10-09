@@ -12,9 +12,8 @@ public class OdometryCorrection implements Runnable {
 
 	// states
 	enum WorkingState {
-		// Turn back to our position
 		TURN_BACK,
-		// back up until you see a line state seeking y=1 black line with unknown theta
+		//state seeking y=1 black line with unknown theta and aligning with that line
 		SEEK_Y,
 		// state aligning to line y=1 (theta = 90) with unknow x
 		ALIGN_X,
@@ -43,22 +42,30 @@ public class OdometryCorrection implements Runnable {
 			sampleProvider.fetchSample(sampleColor, 0);
 			prev = sampleColor[0];
 			switch (currentState) {
+			//First state
 			case TURN_BACK:
 				setSpeed(ROTATE_SPEED);
+				// Turn back so the color sensor points towards positive y direction
 				leftMotor.rotate(convertAngle(180.0), true);
 				rightMotor.rotate(convertAngle(-180.0), false);
 				stopTheRobot();
+				// Start moving backward to meet the y=1 line
 				leftMotor.backward();
 				rightMotor.backward();
 				currentState = WorkingState.SEEK_Y;
 				break;
+			//second state
 			case SEEK_Y:
 				if (ColorReader.detectBlackLine()) {
+					//reset
 					stopTheRobot();
 					Sound.beep();
 					odometer.setY(TILE_SIZE - SENSOR_CENTER_CORRECTION);
+					//move further back until the wheels align with the line
 					leftMotor.rotate(convertDistance(-OdometryCorrection.SENSOR_CENTER_CORRECTION), true);
 					rightMotor.rotate(convertDistance(-OdometryCorrection.SENSOR_CENTER_CORRECTION), false);
+					//turn counterclock-wise until the color sensor detect the y=1 line, 
+					//at which point the robot is parallel with the x axis
 					leftMotor.backward();
 					rightMotor.forward();
 					currentState = WorkingState.ALIGN_X;
@@ -70,19 +77,24 @@ public class OdometryCorrection implements Runnable {
 					} // sleeps the thread to avoid reading the same black line more than once
 				}
 				break;
+			//third state
 			case ALIGN_X:
-				// seconds stage, the robot will turn counter clockwise until the sensor is
-				// directly on the y=1 line
-				if (detectBlackLine()) {
+				if (ColorReader.detectBlackLine()) {
 					stopTheRobot();
 					Sound.beep();
 					odometer.setTheta(90.0);
+					//turn 90 degree counterclock-wise so the robot faces the positive direction
 					leftMotor.rotate(convertAngle(-90.0), true);
 					rightMotor.rotate(convertAngle(90.0), false);
+					//move 5cm back to avoid reading the y=1 line when aligning with the x=1 line
 					leftMotor.rotate(convertDistance(-5.0), true);
 					rightMotor.rotate(convertDistance(-5.0), false);
+					//turn back facing the positive x direction
+					//NB: the robot does not turn clockwise here to avoid the color sensor reading a black line while turning 
+					//or going over the x=1 line
 					leftMotor.rotate(convertAngle(90.0), true);
 					rightMotor.rotate(convertAngle(-90.0), false);
+					//mvoes the robot forward until a black line (y=1) is detected
 					leftMotor.forward();
 					rightMotor.forward();
 					currentState = WorkingState.SEEK_X;
@@ -94,18 +106,20 @@ public class OdometryCorrection implements Runnable {
 					}
 				}
 				break;
+			//Fourth state
 			case SEEK_X:
-				// 4th statge, robot continues forward in -y direction, then turns to -x
-				// direction,
-				// moves backwards until it detects a black line
-				if (detectBlackLine()) {
+				if (ColorReader.detectBlackLine()) {
 					Sound.beep();
+					//reset
 					stopTheRobot();
 					odometer.setX(TILE_SIZE - SENSOR_CENTER_CORRECTION);
+					//back up until the wheels are in line with the x=1 line
 					leftMotor.rotate(-convertDistance(OdometryCorrection.SENSOR_CENTER_CORRECTION), true);
 					rightMotor.rotate(-convertDistance(OdometryCorrection.SENSOR_CENTER_CORRECTION), false);
+					//turn 90 degrees counterclock-wise to face the positive y direction (theta = 0)
 					leftMotor.rotate(convertAngle(-90.0), true);
 					rightMotor.rotate(convertAngle(90.0), false);
+					//recover the distance moved to avoid black lines
 					leftMotor.rotate(convertDistance(5.0), true);
 					rightMotor.rotate(convertDistance(5.0), false);
 					currentState = WorkingState.FINISHED;
@@ -117,11 +131,7 @@ public class OdometryCorrection implements Runnable {
 					}
 				}
 				break;
-				// 5th stage, the robot continues to move until the center is aligned with the
-				// black line, turns in place
-				// towards
-				// the +y direction until the sensor detects the x=1 line, then moves forward to
-				// the (1,1) point
+			//final state
 			case FINISHED:
 				// final stage, robot is stopped at (1,1), and the coordinates are reset
 				stopTheRobot();
@@ -134,17 +144,6 @@ public class OdometryCorrection implements Runnable {
 				Main.sleepFor(CORRECTION_PERIOD - (correctionEnd - correctionStart));
 			}
 		}
-	}
-
-	boolean detectBlackLine() {
-		// System.out.println(sampleColor[0]);
-		return sampleColor[0] < 0.45;
-		// return false;
-		// //TODO: this needs some more work
-		// sampleProvider.fetchSample(sampleColor, 0);
-		// derivative = sampleColor[0] - prev;
-		// prev = sampleColor[0];
-		// return derivative < -0.03;
 	}
 
 	/**
@@ -178,99 +177,10 @@ public class OdometryCorrection implements Runnable {
 	}
 
 	/**
-	 * calculates the displacement needed to move the the desired coordinates
-	 * 
-	 * @return distance needed to travel to a waypoint.
-	 */
-	private static double calculateDistance(Odometer odo, int waypointX, int waypointY) {
-
-		double currentX = odo.getXYT()[0];
-		double currentY = odo.getXYT()[1];
-		double Xtarget = waypointX * TILE_SIZE;
-		double Ytarget = waypointY * TILE_SIZE;
-
-		double X2go = Xtarget - currentX;
-		double Y2go = Ytarget - currentY;
-
-		return Math.sqrt(Math.pow(X2go, 2) + Math.pow(Y2go, 2));
-	}
-
-	/**
-	 * This calculates the angle needed to travel to a waypoint based on the current
-	 * position stored in the odometer
-	 * 
-	 * @param odo       the odometer
-	 * @param waypointX x-coordinate of the robot
-	 * @param waypointY y-coordinate of the robot
-	 * @return the minimum angle rotation needed to point to the waypoint
-	 */
-	private static double calculateAngle(Odometer odo, int waypointX, int waypointY) {
-
-		double currentX = odo.getXYT()[0];
-		double currentY = odo.getXYT()[1];
-		double currentTheta = odo.getXYT()[2];
-		double Xtarget = waypointX * TILE_SIZE;
-		double Ytarget = waypointY * TILE_SIZE;
-
-		double X2go = Xtarget - currentX;
-		double Y2go = Ytarget - currentY;
-
-		double angleTarget = Math.atan(X2go / Y2go) / Math.PI * 180;
-		if (Y2go < 0) {
-			angleTarget += 180;
-		}
-		double angleDeviation = angleTarget - currentTheta;
-
-		if (Math.abs(angleDeviation) < 180)
-			return angleDeviation;
-		else if (angleDeviation > 180) {
-			return angleDeviation - 360;
-		} else {
-			return angleDeviation + 360;
-		}
-	}
-
-	private static int getAngleRotation(Odometer odo, int X, int Y) {
-		return convertAngle(calculateAngle(odo, X, Y));
-	}
-
-	// This is a blocking Turn (blocks other threads)
-	private static void turnTo(int X, int Y) {
-		leftMotor.rotate(getAngleRotation(odometer, X, Y), true);
-		rightMotor.rotate(-getAngleRotation(odometer, X, Y), false);
-	}
-
-	// This is a blocking GoTo (blocks other threads)
-	private static void goTo(int X, int Y) {
-		leftMotor.rotate(convertDistance(calculateDistance(odometer, X, Y)), true);
-		rightMotor.rotate(convertDistance(calculateDistance(odometer, X, Y)), false);
-	}
-
-	/**
-	 * scans the field in a clockwise fashion the first low in distance reading
-	 * AFTER HIGH READING should be when theta = 180 the second low in distance
-	 * should be when theta = 270
-	 */
-	private static void scanField() {
-		setSpeed(100);
-		leftMotor.rotate(convertAngle(360.0), true);
-		rightMotor.rotate(-convertAngle(360.0), false);
-	}
-
-	/**
 	 * set Speed
 	 */
 	private static void setSpeed(int speed) {
 		leftMotor.setSpeed(speed);
 		rightMotor.setSpeed(speed);
 	}
-
-	/**
-	 * using the color sensor (and assuming that the robot is facing the positive y
-	 * general direction), this function tells the robot to march forward until it
-	 * is on the (x,1) line, then rotate clock-wise until the color sensor aligns
-	 * with the black line, at which moment the robot would have a theta value of 90
-	 */
-
-
 }

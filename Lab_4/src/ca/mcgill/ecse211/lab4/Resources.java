@@ -102,7 +102,8 @@ public class Resources {
   public static final Display display = new Display();
   
   /**
-   * Odometer correction
+   * Odometer correction using the color sensor
    */
   public static final OdometryCorrection oc = new OdometryCorrection();
+  
 }

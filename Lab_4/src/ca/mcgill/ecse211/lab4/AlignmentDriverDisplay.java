@@ -7,17 +7,16 @@ import static ca.mcgill.ecse211.lab4.Resources.alignmentDriver;
 
 public class AlignmentDriverDisplay implements Runnable {
 
-  private final long DISPLAY_PERIOD = 550;
-
+  private final long DISPLAY_PERIOD = 550; //display refresh rate
+  public static boolean kill = false; //kill switch for the thread
   private long timeout = Long.MAX_VALUE;
 
   public void run() {
     LCD.clear();
-
     long updateStart, updateEnd;
-
     long tStart = System.currentTimeMillis();
     do {
+      if(kill) break;
       LCD.clear();
       updateStart = System.currentTimeMillis();
       LCD.drawString(alignmentDriver.state.toString(), 0, 0);

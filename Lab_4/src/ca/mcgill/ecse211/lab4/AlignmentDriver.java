@@ -70,7 +70,7 @@ public class AlignmentDriver implements Runnable {
 					spaceCounter++;
 				} else
 					spaceCounter = 0;
-				if (spaceCounter > 5) {
+				if (spaceCounter > 3) {
 					state = SearchingState.GAZING_THE_ABYSS;
 					spaceCounter = 0;
 				}
@@ -94,7 +94,7 @@ public class AlignmentDriver implements Runnable {
 				if (der > 0) {
 					spaceCounter++;
 				}
-				if (spaceCounter > 4) {
+				if (spaceCounter > 3) {
 					state = SearchingState.GAP;
 					prev = 500;
 					spaceCounter = 0;
@@ -106,7 +106,7 @@ public class AlignmentDriver implements Runnable {
 				if (der < 0) {
 					spaceCounter++;
 				}
-				if (spaceCounter > 4) {
+				if (spaceCounter > 3) {
 					state = SearchingState.YWALL;
 					prev = 500;
 					spaceCounter = 0;
@@ -116,21 +116,27 @@ public class AlignmentDriver implements Runnable {
 			//when robot is facing the y=0 wall
 				der = reading - prev;
 				prev = reading;
-				if (der > 0 || spaceCounter > 75) {
-					state = SearchingState.FINISHING;
+				if (der > 0 || spaceCounter > 80) {
+					
 					stopTheRobot();
 					//===========================================
 					setSpeed(80);			//These steps are used
-					leftMotor.forward();	//to ensure alignment
-					rightMotor.forward();	//by ramming the wall
+				//	leftMotor.forward();	//to ensure alignment
+				//	rightMotor.forward();	//by ramming the wall
 					//===========================================
+					if (prev > 9) {
+						leftMotor.rotate(convertDistance(prev-9), true);
+						rightMotor.rotate(convertDistance(prev-9), false);
+					}
+					
 					spaceCounter = 0;
+					state = SearchingState.FINISHED;
 				} else if (der == 0) {
 					spaceCounter++;
 				}
 				break;
 			case FINISHING:
-				if (spaceCounter < 200) {
+				if (spaceCounter < 150) {
 					spaceCounter++;
 				} else {
 					leftMotor.rotate(convertDistance(-8.0), true);

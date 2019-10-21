@@ -1,17 +1,15 @@
-package ca.mcgill.ecse211.lab4;
+package ca.mcgill.ecse211.lab5;
 
-import static ca.mcgill.ecse211.lab4.Resources.*;
+import static ca.mcgill.ecse211.lab5.Resources.US_SENSOR;
 
 import java.util.Arrays;
 
 /**
- * Samples the US sensor and invokes the selected controller on each cycle.
- * Control of the wall follower is applied periodically by the UltrasonicPoller
- * thread. The while loop at the bottom executes in a loop. Assuming that the
- * us.fetchSample, and cont.processUSData methods operate in about 20ms, and
- * that the thread sleeps for 50 ms at the end of each loop, then one cycle
- * through the loop is approximately 70 ms. This corresponds to a sampling rate
- * of 1/70ms or about 14 Hz.
+ * A poller for the ultrasonic sensor. It runs continuously in its own thread,
+ * polling the sensor about every 50 ms. After getting a value from the sensor,
+ * it will convert the distance into centimeters and assign it to the distance
+ * variable. This variable can be accessed by other classes by calling
+ * getDistance().
  */
 public class UltrasonicPoller implements Runnable {
 	private int distance;
@@ -39,7 +37,6 @@ public class UltrasonicPoller implements Runnable {
 				break;
 			US_SENSOR.getDistanceMode().fetchSample(usData, 0); // acquire distance data in meters
 			reading = (int) (usData[0] * 100.0); // extract from buffer, convert to cm, cast to int
-
 			// filling up the median filter and returning -1 as reading
 			if (count < BUFFER_SIZE) {
 				filterBuffer[count] = reading;
@@ -58,7 +55,13 @@ public class UltrasonicPoller implements Runnable {
 		}
 	}
 
-	// shifting the array for the median filter
+	/**
+	 * this method shifts the array by one position and enters a new integer ad the
+	 * [0] position
+	 * 
+	 * @param arr  array
+	 * @param newI new integer to be added
+	 */
 	void shiftArray(int[] arr, int newI) {
 		int size = arr.length;
 		for (int i = 0; i < size - 1; i++) {
@@ -67,6 +70,11 @@ public class UltrasonicPoller implements Runnable {
 		arr[size - 1] = newI;
 	}
 
+	/**
+	 * get the filtered distance reading
+	 * 
+	 * @return filtered reading of distance
+	 */
 	public int getDistance() {
 		return this.distance;
 	}

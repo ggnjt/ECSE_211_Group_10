@@ -50,7 +50,7 @@ public class ColorReader implements Runnable {
 	public static boolean detectBlackLine() { 
 	//this is a filter which uses the derivative of the color sensor to detect black lines
 		if (isFalling) {
-			if (counter > 3) {
+			if (counter > 2) {
 				counter = 0;
 				return true;
 			}
@@ -61,7 +61,7 @@ public class ColorReader implements Runnable {
 			else return false;
 		}
 		else {
-			if (counter > 3) {
+			if (counter > 2) {
 				counter = 0;
 				return true;
 			}
